@@ -1,0 +1,445 @@
+/* =====================================================
+   Theme Variables & Transitions
+===================================================== */
+:root {
+  /* Light mode colors using blue tones */
+  --bg-color: hsl(210, 100%, 95%);             /* Very light blue */
+  --primary-color: #a6d4f2;                     /* Light blue */
+  --text-color: #333333;                        /* Dark text */
+  --nav-bg: rgba(171, 217, 255, 0.8);             /* Semi-transparent light blue */
+  --toggle-bg: rgba(171, 217, 255, 0.8);                         /* Light blue for toggle */
+  --toggle-icon-color: #333333;
+  --folder-bg: #8ecae6;                         /* Blue folder background */
+  --folder-text: #ffffff;                       /* White folder text */
+  --transition-time: 0.5s;
+
+  /* Button theme variables for light mode */
+  --button-view-bg: #4babec;    /* Blue */
+  --button-download-bg: #5dc2cb;/* Green */
+  --button-text-color: #ffffff; /* White */
+}
+
+[data-theme="dark"] {
+  /* Dark mode colors using blue tones */
+  --bg-color: #0a2342;                         /* Dark navy blue */
+  --primary-color: #2c7da0;                     /* Medium blue */
+  --text-color: #f0f0f0;                        /* Light text */
+  --nav-bg: rgba(29, 91, 168, 0.8);               /* Semi-transparent dark navy */
+  --toggle-bg: rgba(29, 91, 168, 0.8);                         /* Medium blue for toggle */
+  --toggle-icon-color: #f0f0f0;
+  --folder-bg: #4f81b3;                         /* Darker blue folder background */
+  --folder-text: #ffffff;                       /* White folder text */
+
+  /* Button theme variables for dark mode */
+  --button-view-bg: #4babec;    /* Blue */
+  --button-download-bg: #5dc2cb;/* Green */
+  --button-text-color: #ffffff; /* White */
+}
+
+/* Apply theme colors */
+body {
+  font-family: 'Times New Roman', Times, serif, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: var(--bg-color);
+  color: var(--text-color);
+  transition: background var(--transition-time) ease, color var(--transition-time) ease;
+  user-select: none;
+}
+
+/* =====================================================
+   Navbar (Transparent with Theme Toggle)
+===================================================== */
+#navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: var(--nav-bg);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  z-index: 900;
+  transition: background var(--transition-time) ease;
+}
+
+.nav-content {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.nav-title {
+  margin: 15px 0px;
+  font-size: 32px;
+  font-weight: bold;
+}
+
+#themeToggle {
+  width: 40px;
+  height: 40px;
+  border: 2px var(--text-color) solid;
+  border-radius: 50%;
+  background-color: var(--nav-bg);
+  cursor: pointer;
+  transition: background var(--transition-time) ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+/* =====================================================
+   Main Container
+===================================================== */
+main {
+  padding: 20px;
+  max-width: 960px;
+  margin: 80px auto 0 auto; /* leave space for navbar */
+}
+
+/* =====================================================
+   Folder and File List Styling
+===================================================== */
+
+/* Top-Level Folder Container as Flex */
+#folderContainer {
+  margin-bottom: 30px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  transition: all 0.5s ease;
+}
+
+/* Top-Level Folder Section */
+.folder-section {
+  background: var(--folder-bg);
+  color: var(--folder-text);
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  opacity: 0;
+  transform: translateY(20px);
+  animation: folderFadeIn 0.5s ease forwards;
+  transition: transform 0.5s ease, order 0.5s ease, box-shadow 0.3s ease;
+}
+
+/* Hover Effects for Top-Level Folder */
+.folder-section:hover {
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+/* Folder Heading */
+.folder-section h3 {
+  text-align: center;
+  font-size: 24px;
+  transition: color 0.3s ease;
+  color: var(--folder-text);
+}
+
+/* Nested Folders Container as Flex */
+.nested-folders {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  margin-top: 15px;
+}
+
+/* Nested Folder Box Styling */
+.nested-folder {
+  flex: 1 1 300px;
+  background: var(--folder-bg);
+  color: var(--folder-text);
+  padding: 10px;
+  border: 1.5px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  transition: transform 0.5s ease, order 0.5s ease, box-shadow 0.3s ease;
+  margin-bottom: 10px;
+  transition: all 0.5s ease;
+  animation: folderFadeIn 0.5s ease forwards;
+}
+
+.nested-folder h4 {
+  margin: 0 0 10px 0;
+  text-align: center;
+  font-size: 20px;
+  transition: color 0.3s ease;
+  padding-right: 30px; /* space for pin icon */
+  color: var(--folder-text);
+}
+/* File List Styles */
+ul.file-list {
+  list-style: none;
+  padding: 0;
+}
+
+li.file-item {
+  margin: 10px 0;
+  padding: 10px;
+  background: #fff;
+  color: #333;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+li.file-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+li.file-item .file-title {
+  font-weight: bold;
+  flex: 1;
+  margin-right: 10px;
+}
+
+li.file-item button {
+  margin-left: 10px;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background var(--transition-time) ease;
+}
+
+/* Updated Button Styles Using Theme Variables */
+button.view-button {
+  background-color: var(--button-view-bg, #007acc);
+  color: var(--button-text-color, #fff);
+}
+
+button.download-button {
+  background-color: var(--button-download-bg, #28a745);
+  color: var(--button-text-color, #fff);
+}
+
+/* Thumbnail for Image Files */
+.thumbnail {
+  max-height: 50px;
+  margin-right: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  transition: transform 0.2s ease;
+}
+
+.thumbnail:hover {
+  transform: scale(1.05);
+}
+
+/* =====================================================
+   Animations
+===================================================== */
+@keyframes folderFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =====================================================
+   Modal Styles
+===================================================== */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  backdrop-filter: blur(5px);
+  background: rgba(0, 0, 0, 0.5);
+}
+
+/* Modal Content Container */
+.modal-content {
+  position: relative;
+  margin: 5% auto;
+  max-width: 600px;
+  width: 90%;
+  background: var(--bg-color); /* Uses theme background */
+  border-radius: 8px;
+  padding: 20px;
+  animation: fadeInUp 0.5s ease forwards;
+}
+
+/* Modal Header for title and close button */
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 10px 0;
+  background: var(--primary-color); /* Use primary color for header */
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+.modal-title {
+  font-size: 20px;
+  font-weight: bold;
+  color: var(--folder-text); /* Using folder text color */
+}
+
+/* Close Button as an Icon */
+.close-button {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  /* Remove border/background so only image shows */
+  border: none;
+  background: transparent;
+}
+
+/* Modal Body (optional, if you want a border between header and body) */
+.modal-body {
+  padding: 20px;
+}
+
+/* Modal fade in/up animation */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Modal fade out/down animation */
+@keyframes fadeOutDown {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+}
+
+/* If you add a "closing" class via JavaScript before hiding, trigger fade-out/downwards */
+.modal-content.closing {
+  animation: fadeOutDown 0.5s ease forwards;
+}
+
+
+.close-button {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: transparent;
+  border: none;
+  font-size: 30px;
+  cursor: pointer;
+  z-index: 1010;
+}
+
+.pdf-container {
+  position: relative;
+  width: 100%;
+  padding-bottom: calc(100% * (297 / 210));
+  overflow: hidden;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-top: 40px;
+}
+
+.pdf-container iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.image-modal-content {
+  max-width: 800px;
+  padding: 20px;
+  position: relative;
+}
+
+.image-modal-content img {
+  width: 90%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+  transition: opacity 0.3s ease;
+}
+
+.code-modal-content {
+  max-width: 800px;
+  padding: 20px;
+  position: relative;
+}
+
+#codeViewer {
+  background: #f4f4f4;
+  color: #333;
+  padding: 15px;
+  border-radius: 4px;
+  max-height: 70vh;
+  overflow-y: auto;
+  font-family: Consolas, "Courier New", monospace;
+}
+
+/* Navigation Buttons for Image Modal */
+.nav-button {
+  position: absolute;
+  z-index: 1500;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  font-size: 24px;
+  padding: 10px;
+  cursor: pointer;
+  border-radius: 30%;
+  transition: all 0.2s;
+  filter: grayscale(100);
+}
+
+.prev-button {
+  left: 10px;
+  background-color: transparent;
+  background-image: url("https://img.icons8.com/?size=40&id=19037&format=png&color=000000");
+  width: 40px;
+  height: 40px;
+}
+
+.next-button {
+  right: 10px;
+  background-color: transparent;
+  background-image: url("https://img.icons8.com/?size=40&id=19034&format=png&color=000000");
+  width: 40px;
+  height: 40px;
+}
+#footer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  text-align: center;
+  background: var(--nav-bg);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  transition: background var(--transition-time) ease;
+}

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Academic Archive</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav id="navbar">
+    <div class="nav-content">
+      <!-- You can add a logo or title here if desired -->
+      <div class="nav-title">The Academic Archive</div>
+      <!-- Night mode toggle button -->
+      <button id="themeToggle" aria-label="Toggle Night Mode"></button>
+    </div>
+  </nav>
+  <main>
+    <!-- Container for dynamically generated folder sections -->
+    <div id="folderContainer"></div>
+  </main>
+  
+  <!-- Modal for PDF Viewer -->
+  <div id="pdfModal" class="modal">
+    <div class="modal-content">
+      <button class="close-button" id="closeModal">&times;</button>
+      <div class="pdf-container">
+        <iframe id="pdfViewer" src="" frameborder="0">
+          Your browser does not support iframes.
+        </iframe>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modal for Image Viewer -->
+  <div id="imageModal" class="modal">
+    <div class="modal-content image-modal-content">
+      <button class="close-button" id="closeImageModal">&times;</button>
+      <button class="nav-button prev-button" id="prevImage"></button>
+      <button class="nav-button next-button" id="nextImage"></button>
+      <img id="imageViewer" src="" alt="Image Viewer">
+    </div>
+  </div>
+
+  <!-- Code Modal -->
+<div id="codeModal" class="modal">
+  <div class="modal-content code-modal-content">
+    <button class="close-button" id="closeCodeModal">&times;</button>
+    <pre id="codeViewer"></pre>
+  </div>
+</div>
+<footer id="footer">
+  <h4> 	&#169; The Academic Archive | Krishna Singh | All Rights Reserved</h3>
+</footer>
+  
+  <script src="script.js"></script>
+</body>
+</html>
