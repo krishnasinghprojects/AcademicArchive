@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
   const repoOwner = "KrishnaSingh1920";
-  const repoName = "AcedemicArchiveDB";
+  const repoName = "AcademicArchiveDB";
   const rootApiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/`;
 
   // Modal elements for PDF
