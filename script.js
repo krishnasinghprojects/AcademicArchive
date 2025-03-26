@@ -157,9 +157,7 @@ document.addEventListener('DOMContentLoaded', () => {
   async function copyToClipboard(text) {
     try {
       await navigator.clipboard.writeText(text);
-      alert('Code copied to clipboard!');
     } catch (err) {
-      console.error('Failed to copy code:', err);
     }
   }
 
