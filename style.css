@@ -4,36 +4,37 @@
 :root {
   /* Light mode colors using blue tones */
   --bg-color: hsl(210, 100%, 95%);             /* Very light blue */
-  --primary-color: #a6d4f2;                     /* Light blue */
+  --primary-color: #ffffff;                     /* Light blue */
   --text-color: #333333;                        /* Dark text */
-  --nav-bg: rgba(171, 217, 255, 0.8);             /* Semi-transparent light blue */
-  --toggle-bg: rgba(171, 217, 255, 0.8);                         /* Light blue for toggle */
-  --toggle-icon-color: #333333;
-  --folder-bg: #8ecae6;                         /* Blue folder background */
+  --nav-bg: rgba(227, 243, 255, 0.8);             /* Semi-transparent light blue */
+  --toggle-bg: rgba(244, 254, 255, 0.8);                         /* Light blue for toggle */
+  --toggle-icon-color: #666666;
+  --folder-bg: #effaff;                         /* Blue folder background */
   --folder-text: #ffffff;                       /* White folder text */
   --transition-time: 0.5s;
-
+  --reverse:0;
   /* Button theme variables for light mode */
-  --button-view-bg: #4babec;    /* Blue */
-  --button-download-bg: #5dc2cb;/* Green */
+  --button-view-bg: #81cdff;    /* Blue */
+  --button-download-bg: #75c5cc;/* Green */
   --button-text-color: #ffffff; /* White */
 }
 
 [data-theme="dark"] {
-  /* Dark mode colors using blue tones */
-  --bg-color: #0a2342;                         /* Dark navy blue */
-  --primary-color: #2c7da0;                     /* Medium blue */
-  --text-color: #f0f0f0;                        /* Light text */
-  --nav-bg: rgba(29, 91, 168, 0.8);               /* Semi-transparent dark navy */
-  --toggle-bg: rgba(29, 91, 168, 0.8);                         /* Medium blue for toggle */
-  --toggle-icon-color: #f0f0f0;
-  --folder-bg: #4f81b3;                         /* Darker blue folder background */
-  --folder-text: #ffffff;                       /* White folder text */
-
-  /* Button theme variables for dark mode */
-  --button-view-bg: #4babec;    /* Blue */
-  --button-download-bg: #5dc2cb;/* Green */
-  --button-text-color: #ffffff; /* White */
+  /* Dark mode using only the second theme’s shades */
+  --bg-color: #222;                      /* Dark background (from primary-bg) */
+  --primary-color: #fff;                 /* Main text color */
+  --text-color: #fff;                    /* Consistent with primary text */
+  --nav-bg: rgba(102, 102, 102, 0.8);      /* Semi-transparent accent (from accent-color) */
+  --toggle-bg: rgba(102, 102, 102, 0.8);   /* Matching toggle background */
+  --toggle-icon-color: #fff;             /* Light icons for contrast */
+  --folder-bg: #272727;                   /* Using button-bg shade for folder backgrounds */
+  --folder-text: #fff;                   /* White folder text */
+  --transition-time: 0.3s;               /* Transition speed from the second theme */
+  --reverse:1;
+   /* Button theme variables for light mode */
+   --button-view-bg: #81cdff;    /* Blue */
+   --button-download-bg: #75c5cc;/* Green */
+   --button-text-color: #ffffff; /* White */ 
 }
 
 /* Apply theme colors */
@@ -45,6 +46,7 @@ body {
   color: var(--text-color);
   transition: background var(--transition-time) ease, color var(--transition-time) ease;
   user-select: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* =====================================================
@@ -109,8 +111,8 @@ main {
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  transition: all 0.5s ease;
+  gap: 25px;
+  transition: all 0.75s ease;
 }
 
 /* Top-Level Folder Section */
@@ -136,7 +138,7 @@ main {
   text-align: center;
   font-size: 24px;
   transition: color 0.3s ease;
-  color: var(--folder-text);
+  color: var(--text-color);
 }
 
 /* Nested Folders Container as Flex */
@@ -170,7 +172,7 @@ main {
   font-size: 20px;
   transition: color 0.3s ease;
   padding-right: 30px; /* space for pin icon */
-  color: var(--folder-text);
+  color: var(--text-color);
 }
 /* File List Styles */
 ul.file-list {
@@ -181,8 +183,8 @@ ul.file-list {
 li.file-item {
   margin: 10px 0;
   padding: 10px;
-  background: #fff;
-  color: #333;
+  background: rgba(255, 255, 255, 0.396);
+  color: var(--text-color);
   border: 1px solid #ddd;
   border-radius: 4px;
   display: flex;
@@ -274,7 +276,7 @@ button.download-button {
   background: var(--bg-color); /* Uses theme background */
   border-radius: 8px;
   padding: 20px;
-  animation: fadeInUp 0.5s ease forwards;
+  animation: fadeInUp 0.2s ease forwards;
 }
 
 /* Modal Header for title and close button */
@@ -338,23 +340,23 @@ button.download-button {
   }
 }
 
-/* If you add a "closing" class via JavaScript before hiding, trigger fade-out/downwards */
+
 .modal-content.closing {
-  animation: fadeOutDown 0.5s ease forwards;
+  animation: fadeOutDown 0.2s ease forwards;
 }
 
 
 .close-button {
   position: absolute;
   top: 20px;
-  right: 20px;
+  right: 10px;
   background: transparent;
   border: none;
   font-size: 30px;
   cursor: pointer;
   z-index: 1010;
+  filter: invert(var(--reverse));
 }
-
 .pdf-container {
   position: relative;
   width: 100%;
@@ -362,7 +364,7 @@ button.download-button {
   overflow: hidden;
   border: 1px solid #ccc;
   border-radius: 4px;
-  margin-top: 40px;
+  margin-top: 20px;
 }
 
 .pdf-container iframe {
@@ -442,4 +444,11 @@ button.download-button {
   background: var(--nav-bg);
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
   transition: background var(--transition-time) ease;
+}
+img{
+  filter:invert(var(--reverse));
+  transition: transform 0.2s ease-in-out;
+}
+img:active {
+  transform: scale(0.80);
 }

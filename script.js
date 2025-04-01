@@ -58,11 +58,12 @@ document.addEventListener('DOMContentLoaded', () => {
     reorderFolders(folderElement.parentElement); // Reorder folders in the parent container
   }
 
-  // Reorders child folders so pinned ones come first
+  // Reorders child folders so pinned ones come first.
+  // Only re-appends an element if its position has changed to avoid triggering animations unnecessarily.
   function reorderFolders(parentContainer) {
     if (!parentContainer) return;
     const children = Array.from(parentContainer.children);
-    children.sort((a, b) => {
+    const sortedChildren = children.slice().sort((a, b) => {
       const pathA = a.dataset.folderPath;
       const pathB = b.dataset.folderPath;
       const pinnedA = pinnedFolders.includes(pathA);
@@ -71,8 +72,10 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!pinnedA && pinnedB) return 1;
       return 0;
     });
-    children.forEach(child => {
-      parentContainer.appendChild(child);
+    sortedChildren.forEach((child, i) => {
+      if (parentContainer.children[i] !== child) {
+        parentContainer.appendChild(child);
+      }
     });
   }
   // -------------------------------
@@ -85,7 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
       pdfModal.style.display = "none";
       pdfViewer.src = "";
       modalContent.classList.remove('closing');
-    }, 500);
+    }, 200);
   }
 
   function closeImageModalWithTransition() {
@@ -97,7 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
       currentImageList = [];
       currentImageIndex = 0;
       modalContent.classList.remove('closing');
-    }, 500);
+    }, 200);
   }
 
   function closeCodeModalWithTransition() {
@@ -107,7 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
       codeModal.style.display = "none";
       codeViewer.textContent = "";
       modalContent.classList.remove('closing');
-    }, 500);
+    }, 200);
   }
 
   // Modal close event listeners
@@ -145,7 +148,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Array of common code file extensions
-  const codeExtensions = ['.py', '.c', '.cpp', '.js', '.java', '.cs', '.ts', '.go', '.rb', '.php', '.swift', '.rs'];
+  const codeExtensions = ['.py', '.c', '.cpp', '.js', '.java', '.cs', '.ts', '.go', '.rb', '.php', '.swift', '.rs', '.html', '.css'];
 
   // Utility to check if a file is recognized as code
   function isCodeFile(filename) {
@@ -158,6 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
     try {
       await navigator.clipboard.writeText(text);
     } catch (err) {
+      // Handle error if needed
     }
   }
 
@@ -193,12 +197,12 @@ document.addEventListener('DOMContentLoaded', () => {
         pinBtn.style.width = '24px';
         pinBtn.style.height = '24px';
         pinBtn.style.cursor = 'pointer';
-        pinBtn.style.opacity = isFolderPinned(folder.name) ? '1.0' : '0.5';
+        pinBtn.style.opacity = isFolderPinned(folder.name) ? '1.0' : '0.3';
 
         pinBtn.addEventListener('click', (e) => {
           e.stopPropagation();
           togglePinFolder(folder.name, section);
-          pinBtn.style.opacity = isFolderPinned(folder.name) ? '1.0' : '0.6';
+          pinBtn.style.opacity = isFolderPinned(folder.name) ? '1.0' : '0.3';
         });
 
         headingContainer.appendChild(pinBtn);
