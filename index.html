@@ -1,10 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
+  <!-- SEO Meta Tags -->
+  <meta name="description"
+    content="Academic Archive is your digital repository for academic resources, offering seamless access to PDFs, images, and code files with an intuitive, dynamic interface and night mode toggle.">
+  <meta name="keywords"
+    content="Academic Archive, Digital Repository, Academic Resources, PDF Viewer, Image Viewer, Code Viewer, Educational Hub, Krishna Singh">
+  <meta name="author" content="Krishna Singh">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Open Graph Meta Tags for Social Sharing -->
+  <meta property="og:title" content="Academic Archive">
+  <meta property="og:description" content="Explore a digital repository tailored for academic resources. Access PDFs, images, and code files through an engaging, dynamic interface with night mode support.">
+  <meta property="og:image" content="https://krishnasingh1920.github.io/AcademicArchive/AA.png">
+  <meta property="og:url" content="https://krishnasingh1920.github.io/AcademicArchive/">
+  <meta property="og:type" content="website">
+
+  <!-- Favicon -->
+  <link rel="icon" href="Favicon.png" type="image/png">
+
   <title>Academic Archive</title>
+
   <link rel="stylesheet" href="style.css">
+  
 </head>
+
 <body>
   <nav id="navbar">
     <div class="nav-content">
@@ -18,7 +40,7 @@
     <!-- Container for dynamically generated folder sections -->
     <div id="folderContainer"></div>
   </main>
-  
+
   <!-- Modal for PDF Viewer -->
   <div id="pdfModal" class="modal">
     <div class="modal-content">
@@ -30,7 +52,7 @@
       </div>
     </div>
   </div>
-  
+
   <!-- Modal for Image Viewer -->
   <div id="imageModal" class="modal">
     <div class="modal-content image-modal-content">
@@ -42,16 +64,17 @@
   </div>
 
   <!-- Code Modal -->
-<div id="codeModal" class="modal">
-  <div class="modal-content code-modal-content">
-    <button class="close-button" id="closeCodeModal">&times;</button>
-    <pre id="codeViewer"></pre>
+  <div id="codeModal" class="modal">
+    <div class="modal-content code-modal-content">
+      <button class="close-button" id="closeCodeModal">&times;</button>
+      <pre id="codeViewer"></pre>
+    </div>
   </div>
-</div>
-<footer id="footer">
-  <h4> 	&#169; The Academic Archive | Krishna Singh | All Rights Reserved</h3>
-</footer>
-  
+  <footer id="footer">
+    <h4> &#169; The Academic Archive | Krishna Singh | All Rights Reserved</h3>
+  </footer>
+
   <script src="script.js"></script>
 </body>
+
 </html>
