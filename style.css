@@ -463,4 +463,7 @@ img:active {
   li.file-item{
     font-size: 0.6rem;
   }
+  .modal-content{
+    width: 80%;
+  }
 }

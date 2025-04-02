@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const prevImageBtn = document.getElementById('prevImage');
   const nextImageBtn = document.getElementById('nextImage');
 
-  // New: Code Modal Elements
+  // Modal elements for Code
   const codeModal = document.getElementById('codeModal');
   const closeCodeModal = document.getElementById('closeCodeModal');
   const codeViewer = document.getElementById('codeViewer');
@@ -24,10 +24,116 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentImageIndex = 0;
   let currentImageList = [];
 
+  // Variables to store current share URLs for each modal
+  let currentPdfShareUrl = "";
+  let currentCodeShareUrl = "";
+  let currentImageShareUrl = "";
+
+  // -------------------------------
+  // Share Functionality with fallback notification
+  // -------------------------------
+
+// Prevents spam clicks
+let notificationCooldown = false;
+
+async function copyToClipboardWithNotification(text, event) {
+    if (notificationCooldown) return;
+    notificationCooldown = true;
+
+    try {
+        await navigator.clipboard.writeText(text);
+
+        // Create notification element
+        let notification = document.createElement('div');
+        notification.textContent = "✔ Link copied to share!";
+        notification.style.position = 'absolute';
+        notification.style.padding = '6px 10px';
+        notification.style.backgroundColor = 'rgba(95, 255, 70, 0.9)';
+        notification.style.color = 'white';
+        notification.style.fontSize = '10px';
+        notification.style.fontWeight = 'bold';
+        notification.style.borderRadius = '5px';
+        notification.style.zIndex = '2000';  // Ensure visibility
+        notification.style.whiteSpace = 'nowrap';
+        notification.style.opacity = '0';
+        notification.style.transition = 'transform 0.4s ease-out, opacity 0.4s ease-in-out';
+
+        document.body.appendChild(notification); // Append before measuring
+
+        // Get button position
+        let buttonRect = event.target.getBoundingClientRect();
+        notification.style.left = `${buttonRect.right + 10}px`;
+        notification.style.top = `${buttonRect.top - 4}px`;
+        notification.style.transform = 'translateX(-20px)';
+
+        // Trigger fade-in
+        setTimeout(() => {
+            notification.style.opacity = '1';
+            notification.style.transform = 'translateX(0)';
+        }, 10);
+
+        // Auto-remove after 2 sec
+        setTimeout(() => {
+            notification.style.opacity = '0';
+            notification.style.transform = 'translateX(20px)';
+            setTimeout(() => {
+                notification.remove();
+                notificationCooldown = false;
+            }, 400);
+        }, 2000);
+
+    } catch (err) {
+        console.error("Failed to copy text: ", err);
+        notificationCooldown = false;
+    }
+}
+
+// Function to add share button inside modals
+function addShareButton(modalElement, shareCallback) {
+    const modalContent = modalElement.querySelector('.modal-content') || modalElement; // Fallback if `.modal-content` doesn't exist
+    if (!modalContent) {
+        console.error("Modal content not found for", modalElement);
+        return;
+    }
+
+    const shareBtn = document.createElement('img');
+    shareBtn.src = 'https://img.icons8.com/?size=100&id=3447&format=png&color=000000';
+    shareBtn.alt = 'Share';
+    shareBtn.style.position = 'absolute';
+    shareBtn.style.top = '10px';
+    shareBtn.style.left = '10px';
+    shareBtn.style.width = '16px';
+    shareBtn.style.height = '16px';
+    shareBtn.style.cursor = 'pointer';
+    shareBtn.style.zIndex = '2000'; // Ensure visibility
+
+    shareBtn.addEventListener('click', shareCallback);
+    modalContent.appendChild(shareBtn);
+    return shareBtn;
+}
+
+// Add share buttons to modals
+const pdfShareBtn = addShareButton(pdfModal, (event) => {
+    if (!currentPdfShareUrl) return console.error("No URL for PDF modal");
+    const viewerUrl = "https://docs.google.com/gview?url=" + encodeURIComponent(currentPdfShareUrl) + "&embedded=true";
+    copyToClipboardWithNotification(viewerUrl, event);
+});
+
+const codeShareBtn = addShareButton(codeModal, (event) => {
+    if (!currentCodeShareUrl) return console.error("No URL for code modal");
+    copyToClipboardWithNotification(currentCodeShareUrl, event);
+});
+
+const imageShareBtn = addShareButton(imageModal, (event) => {
+    if (!currentImageShareUrl) return console.error("No URL for image modal");
+    copyToClipboardWithNotification(currentImageShareUrl, event);
+});
+
+
   // -------------------------------
   // Pinned folders localStorage
   // -------------------------------
-  let pinnedFolders = loadPinnedFolders(); // pinnedFolders is an array of folder paths that have been pinned
+  let pinnedFolders = loadPinnedFolders();
 
   function loadPinnedFolders() {
     try {
@@ -42,12 +148,10 @@ document.addEventListener('DOMContentLoaded', () => {
     localStorage.setItem('pinnedFolders', JSON.stringify(pinnedFolders));
   }
 
-  // Helper function to check if a folder path is pinned
   function isFolderPinned(folderPath) {
     return pinnedFolders.includes(folderPath);
   }
 
-  // Helper function to toggle pinned status of a folder path
   function togglePinFolder(folderPath, folderElement) {
     if (isFolderPinned(folderPath)) {
       pinnedFolders = pinnedFolders.filter(p => p !== folderPath);
@@ -55,11 +159,9 @@ document.addEventListener('DOMContentLoaded', () => {
       pinnedFolders.push(folderPath);
     }
     savePinnedFolders();
-    reorderFolders(folderElement.parentElement); // Reorder folders in the parent container
+    reorderFolders(folderElement.parentElement);
   }
 
-  // Reorders child folders so pinned ones come first.
-  // Only re-appends an element if its position has changed to avoid triggering animations unnecessarily.
   function reorderFolders(parentContainer) {
     if (!parentContainer) return;
     const children = Array.from(parentContainer.children);
@@ -78,9 +180,10 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
-  // -------------------------------
 
-  // Helper functions to close modals with transition
+  // -------------------------------
+  // Modal Close Helpers
+  // -------------------------------
   function closePdfModal() {
     const modalContent = pdfModal.querySelector('.modal-content');
     modalContent.classList.add('closing');
@@ -113,7 +216,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 200);
   }
 
-  // Modal close event listeners
   closeModal.addEventListener('click', closePdfModal);
   closeImageModal.addEventListener('click', closeImageModalWithTransition);
   closeCodeModal.addEventListener('click', closeCodeModalWithTransition);
@@ -124,13 +226,16 @@ document.addEventListener('DOMContentLoaded', () => {
     if (event.target === codeModal) closeCodeModalWithTransition();
   });
 
-  // Navigation for image modal
+  // -------------------------------
+  // Navigation for Image Modal
+  // -------------------------------
   prevImageBtn.addEventListener('click', () => {
     if (currentImageList.length > 0) {
       currentImageIndex = (currentImageIndex - 1 + currentImageList.length) % currentImageList.length;
       imageViewer.style.opacity = 0;
       setTimeout(() => {
         imageViewer.src = currentImageList[currentImageIndex];
+        currentImageShareUrl = currentImageList[currentImageIndex];
         imageViewer.style.opacity = 1;
       }, 300);
     }
@@ -142,30 +247,33 @@ document.addEventListener('DOMContentLoaded', () => {
       imageViewer.style.opacity = 0;
       setTimeout(() => {
         imageViewer.src = currentImageList[currentImageIndex];
+        currentImageShareUrl = currentImageList[currentImageIndex];
         imageViewer.style.opacity = 1;
       }, 300);
     }
   });
 
-  // Array of common code file extensions
+  // -------------------------------
+  // File Type Helpers
+  // -------------------------------
   const codeExtensions = ['.py', '.c', '.cpp', '.js', '.java', '.cs', '.ts', '.go', '.rb', '.php', '.swift', '.rs', '.html', '.css'];
 
-  // Utility to check if a file is recognized as code
   function isCodeFile(filename) {
     const lower = filename.toLowerCase();
     return codeExtensions.some(ext => lower.endsWith(ext));
   }
 
-  // Helper function to copy text to clipboard
   async function copyToClipboard(text) {
     try {
       await navigator.clipboard.writeText(text);
     } catch (err) {
-      // Handle error if needed
+      console.error("Failed to copy text: ", err);
     }
   }
 
-  // Fetch top-level folders
+  // -------------------------------
+  // Fetch Folders and Files
+  // -------------------------------
   async function fetchFolders() {
     try {
       const response = await fetch(rootApiUrl);
@@ -222,7 +330,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Recursive function to fetch contents of a folder (files and subfolders)
   async function fetchFolderContents(folderPath, parentElement, fullFolderPath) {
     const folderApiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/${folderPath}`;
     try {
@@ -249,7 +356,6 @@ document.addEventListener('DOMContentLoaded', () => {
             title.textContent = item.name;
             title.className = 'file-title';
 
-            // "View" button for code
             const viewBtn = document.createElement('button');
             viewBtn.textContent = "View";
             viewBtn.className = 'view-button';
@@ -259,10 +365,10 @@ document.addEventListener('DOMContentLoaded', () => {
               const codeResponse = await fetch(rawUrl);
               const codeText = await codeResponse.text();
               codeViewer.textContent = codeText;
+              currentCodeShareUrl = rawUrl;
               codeModal.style.display = "block";
             });
 
-            // "Copy" button for code
             const copyBtn = document.createElement('button');
             copyBtn.textContent = "Copy";
             copyBtn.className = 'download-button';
@@ -295,6 +401,7 @@ document.addEventListener('DOMContentLoaded', () => {
               const rawUrl = `https://raw.githubusercontent.com/${repoOwner}/${repoName}/master/${folderPath}/${item.name}`;
               const viewerUrl = `https://docs.google.com/gview?url=${encodeURIComponent(rawUrl)}&embedded=true`;
               pdfViewer.src = viewerUrl;
+              currentPdfShareUrl = rawUrl;
               pdfModal.style.display = "block";
             });
 
@@ -334,6 +441,7 @@ document.addEventListener('DOMContentLoaded', () => {
               currentImageList = Array.from(imageElements).map(imgEl => imgEl.src);
               currentImageIndex = currentImageList.indexOf(rawUrl);
               imageViewer.src = rawUrl;
+              currentImageShareUrl = rawUrl;
               imageModal.style.display = "block";
             });
 
@@ -353,15 +461,11 @@ document.addEventListener('DOMContentLoaded', () => {
           }
         } 
         else if (item.type === "dir") {
-          // For nested folders, create a flex item inside nestedContainer
           const nestedFolder = document.createElement('div');
           nestedFolder.className = 'nested-folder';
-          
-          // Store full path for nested folder pinning
           const nestedFullPath = `${folderPath}/${item.name}`;
           nestedFolder.dataset.folderPath = nestedFullPath;
 
-          // Heading container with pin button
           const headingContainer = document.createElement('div');
           headingContainer.style.position = 'relative';
 
@@ -369,7 +473,6 @@ document.addEventListener('DOMContentLoaded', () => {
           nestedHeading.textContent = item.name;
           headingContainer.appendChild(nestedHeading);
 
-          // Pin button for nested folder (same as main folder)
           const pinBtn = document.createElement('img');
           pinBtn.src = 'https://img.icons8.com/?size=100&id=7873&format=png&color=000000';
           pinBtn.alt = 'Pin Folder';
@@ -391,26 +494,22 @@ document.addEventListener('DOMContentLoaded', () => {
           nestedFolder.appendChild(headingContainer);
 
           nestedContainer.appendChild(nestedFolder);
-          // Recursively fetch contents for this nested folder
           await fetchFolderContents(nestedFullPath, nestedFolder, nestedFullPath);
         }
       }
-
-      // After loading items, reorder pinned nested folders
       reorderFolders(parentElement.querySelector('.nested-folders'));
     } catch (error) {
       console.error(`Error fetching contents for folder ${folderPath}:`, error);
     }
   }
 
-  // Initialize top-level folders
   fetchFolders();
 });
+
 document.addEventListener('DOMContentLoaded', () => {
   const themeToggle = document.getElementById('themeToggle');
   const rootElement = document.documentElement;
 
-  // Check for a saved theme in localStorage
   const savedTheme = localStorage.getItem('theme');
   if (savedTheme) {
     rootElement.setAttribute('data-theme', savedTheme);
@@ -432,5 +531,4 @@ document.addEventListener('DOMContentLoaded', () => {
       themeToggle.innerHTML = '<img src="https://img.icons8.com/?size=100&id=9313&format=png&color=000000" alt="Light Mode" style="width:30px;height:30px;">';
     }
   }
-  
 });
