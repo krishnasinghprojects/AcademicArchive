@@ -452,3 +452,15 @@ img{
 img:active {
   transform: scale(0.80);
 }
+@media screen and (max-width: 600px) {
+  .nav-title {
+      font-size: 1rem; /* Adjust as needed */
+  }
+
+  h4 {
+      font-size: 0.75rem; /* Adjust as needed */
+  }
+  li.file-item{
+    font-size: 0.6rem;
+  }
+}
