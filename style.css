@@ -277,7 +277,10 @@ button.download-button {
   background-color: var(--button-download-bg, #28a745);
   color: var(--button-text-color, #fff);
 }
-
+.share-notification {
+  will-change: transform, opacity;
+  transform-origin: center;
+}
 /* Thumbnail for Image Files */
 .thumbnail {
   max-height: 50px;
@@ -520,4 +523,9 @@ img:active {
   .modal-content{
     width: 80%;
   }
+  .share-notification {
+    font-size: 14px !important;
+    padding: 12px 24px !important;
+    border-radius: 30px !important;
+}
 }

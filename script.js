@@ -28,52 +28,85 @@ document.addEventListener('DOMContentLoaded', () => {
   let notificationCooldown = false;
   let pinnedFolders = JSON.parse(localStorage.getItem('pinnedFolders')) || [];
 
-  // -------------------------------
-  // Enhanced Share Functionality
-  // -------------------------------
-  async function copyToClipboardWithNotification(text, event) {
-    if (notificationCooldown) return;
-    notificationCooldown = true;
+// -------------------------------
+// Enhanced Share Functionality (Mobile Support)
+// -------------------------------
+async function copyToClipboardWithNotification(text, event) {
+  if (notificationCooldown) return;
+  notificationCooldown = true;
 
-    try {
-      await navigator.clipboard.writeText(text);
+  try {
+      // Mobile-friendly clipboard handling
+      if (navigator.clipboard) {
+          await navigator.clipboard.writeText(text);
+      } else {
+          // Fallback for older browsers
+          const textArea = document.createElement('textarea');
+          textArea.value = text;
+          document.body.appendChild(textArea);
+          textArea.select();
+          document.execCommand('copy');
+          document.body.removeChild(textArea);
+      }
+
       const buttonRect = event.target.getBoundingClientRect();
       const notification = document.createElement('div');
-      notification.textContent = "Copied Link to Share!";
+      notification.className = 'share-notification';
+      notification.textContent = "Link Copied!";
+      
+      // Mobile-responsive positioning
+      const isMobile = true;
       Object.assign(notification.style, {
-        position: 'fixed',
-        padding: '5px 10px',
-        backgroundColor: 'rgba(255, 255, 255, 0)',
-        color: 'rgb(0, 165, 33)',
-        fontSize: '12px',
-        fontWeight: 'bold',
-        borderRadius: '4px',
-        zIndex: '2000',
-        left: `${buttonRect.right - 2}px`,
-        top: `${buttonRect.top-5}px`,
-        opacity: '0',
-        transform: 'translateX(-20px)',
-        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-        pointerEvents: 'none'
+          position: 'fixed',
+          padding: '8px 16px',
+          backgroundColor: 'rgba(255, 255, 255, 0.9)',
+          color: '#00a521',
+          fontSize: isMobile ? '14px' : '12px',
+          fontWeight: 'bold',
+          borderRadius: '5px',
+          zIndex: '2000',
+          left: isMobile ? '50%' : `${buttonRect.right - 2}px`,
+          top: isMobile ? '90%' : `${buttonRect.top - 5}px`,
+          transform: isMobile ? 'translate(-50%, -50%)' : 'translateX(-20px)',
+          opacity: '0',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+          transition: 'all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+          pointerEvents: 'none',
+          backdropFilter: 'blur(4px)',
+          WebkitBackdropFilter: 'blur(4px)',
+          whiteSpace: 'nowrap'
       });
 
       document.body.appendChild(notification);
-      setTimeout(() => {
-        notification.style.opacity = '1';
-        notification.style.transform = 'translateX(0)';
-      }, 10);
+      
+      // Trigger animation
+      requestAnimationFrame(() => {
+          notification.style.opacity = '1';
+          notification.style.transform = isMobile 
+              ? 'translate(-50%, -50%) scale(1)' 
+              : 'translateX(0) scale(1)';
+      });
 
       setTimeout(() => {
-        notification.style.opacity = '0';
-        notification.style.transform = 'translateX(10px)';
-        setTimeout(() => notification.remove(), 300);
-        notificationCooldown = false;
-      }, 750);
-    } catch (err) {
+          notification.style.opacity = '0';
+          notification.style.transform = isMobile 
+              ? 'translate(-50%, -50%) scale(0.9)' 
+              : 'translateX(10px) scale(0.9)';
+          
+          setTimeout(() => {
+              notification.remove();
+              notificationCooldown = false;
+          }, 400);
+      }, 1500);
+  } catch (err) {
       console.error("Failed to copy text: ", err);
       notificationCooldown = false;
-    }
+      // Fallback for iOS: Show prompt
+      if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+          prompt("Copy this URL:", text);
+      }
   }
+}
 
   function addShareButton(modal, getUrlCallback) {
     const shareBtn = document.createElement('img');
