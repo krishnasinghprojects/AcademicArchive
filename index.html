@@ -30,8 +30,17 @@
 <body>
   <nav id="navbar">
     <div class="nav-content">
-      <!-- You can add a logo or title here if desired -->
-      <div class="nav-title">The Academic Archive</div>
+      <div class="nav-title" id="name">The Academic Archive</div>
+      
+      <div class="nav-controls">
+        <div class="search-container">
+          <input type="text" id="searchInput" placeholder="Search files...">
+          <button id="searchButton">
+            <img src="https://img.icons8.com/?size=100&id=7695&format=png&color=000000" 
+                 alt="Search" 
+                 class="search-icon">
+          </button>
+        </div>
       <!-- Night mode toggle button -->
       <button id="themeToggle" aria-label="Toggle Night Mode"></button>
     </div>
