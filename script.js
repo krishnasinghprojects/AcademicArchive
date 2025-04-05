@@ -29,7 +29,6 @@ document.addEventListener('DOMContentLoaded', () => {
       let pinnedFolders = JSON.parse(localStorage.getItem('pinnedFolders')) || [];
       let allFileElements = [];
 
-
       let searchActive = false;
 
       document.getElementById('searchButton').addEventListener('click', function (e) {
@@ -57,6 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
           searchActive = false;
         }
       });
+
       // -------------------------------
       // Enhanced Share Functionality (Mobile Support)
       // -------------------------------
@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
             document.body.removeChild(textArea);
           }
 
-          const buttonRect = event.target.getBoundingClientRect();
+          const buttonRect = event ? event.target.getBoundingClientRect() : { left: '50%', top: '90%' };
           const notification = document.createElement('div');
           notification.className = 'share-notification';
           notification.textContent = "Link Copied!";
@@ -295,10 +295,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const li = document.createElement('li');
         li.className = 'file-item';
         li.innerHTML = `
-      <span class="file-title">${fileName}</span>
-      <button class="view-button">View</button>
-      <button class="download-button">${isCodeFile(fileName) ? 'Copy' : 'Download'}</button>
-    `;
+          <span class="file-title">${fileName}</span>
+          <button class="view-button">View</button>
+          <button class="download-button">${isCodeFile(fileName) ? 'Copy' : 'Download'}</button>
+        `;
         return li;
       }
 
@@ -320,6 +320,35 @@ document.addEventListener('DOMContentLoaded', () => {
           imageViewer.src = currentImageList[currentImageIndex];
           imageViewer.style.opacity = 1;
         }, 300);
+      }
+
+      // -------------------------------
+      // Global File View and Download Handlers
+      // -------------------------------
+      function handleFileView(rawUrl, fileType) {
+        if (fileType === 'pdf') {
+          pdfViewer.src = `https://docs.google.com/gview?url=${encodeURIComponent(rawUrl)}&embedded=true`;
+          pdfModal.style.display = "block";
+        } else if (fileType === 'code') {
+          fetch(rawUrl)
+            .then(response => response.text())
+            .then(code => {
+              codeViewer.textContent = code;
+              codeModal.style.display = "block";
+            });
+        } else if (fileType === 'image') {
+          imageViewer.src = rawUrl;
+          imageModal.style.display = "block";
+        }
+      }
+
+      function handleFileDownload(rawUrl, fileType) {
+        if (fileType === 'code') {
+          // Copy the code file URL to clipboard
+          copyToClipboardWithNotification(rawUrl, { target: { getBoundingClientRect: () => ({ left: '50%', top: '90%' }) } });
+        } else {
+          window.open(rawUrl);
+        }
       }
 
       // -------------------------------
@@ -389,17 +418,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
               // Add dataset attributes here ▼
               li.dataset.rawUrl = rawUrl;
-              li.dataset.fileType = item.type === 'dir' ? 'folder' :
-                isCodeFile(item.name) ? 'code' :
-                  item.name.toLowerCase().endsWith('.pdf') ? 'pdf' : 'image';
+              li.dataset.fileType = isCodeFile(item.name) ? 'code' :
+                item.name.toLowerCase().endsWith('.pdf') ? 'pdf' : 'image';
 
-              li.querySelector('.view-button').onclick = async () => {
-                // ... existing view handler code ...
-              };
-
-              li.querySelector('.download-button').onclick = (e) => {
-                // ... existing download handler code ...
-              };
+              li.querySelector('.view-button').onclick = () => handleFileView(rawUrl, li.dataset.fileType);
+              li.querySelector('.download-button').onclick = (e) => handleFileDownload(rawUrl, li.dataset.fileType);
 
               if (/\.(jpe?g|png|gif)$/i.test(item.name)) {
                 const img = document.createElement('img');
@@ -410,7 +433,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
               fileList.appendChild(li);
 
-              // Add this event dispatch after appending the li ▼
+              // Dispatch event to update file collection
               document.dispatchEvent(new Event('folderContentLoaded'));
             } else if (item.type === "dir") {
               const nestedFolder = createFolderElement(true);
@@ -421,9 +444,9 @@ document.addEventListener('DOMContentLoaded', () => {
               folderLi.dataset.rawUrl = `https://github.com/${repoOwner}/${repoName}/tree/master/${folderPath}/${item.name}`;
               folderLi.dataset.fileType = 'folder';
               folderLi.innerHTML = `
-            <span class="file-title">${item.name}</span>
-            <button class="view-button">Open</button>
-          `;
+                <span class="file-title">${item.name}</span>
+                <button class="view-button">Open</button>
+              `;
               allFileElements.push(folderLi);
 
               const headingContainer = document.createElement('div');
@@ -441,7 +464,6 @@ document.addEventListener('DOMContentLoaded', () => {
               nestedContainer.appendChild(nestedFolder);
 
               fetchFolderContents(`${folderPath}/${item.name}`, contentContainer);
-
 
               document.dispatchEvent(new Event('folderContentLoaded'));
             }
@@ -472,7 +494,10 @@ document.addEventListener('DOMContentLoaded', () => {
           ? '<img src="https://img.icons8.com/?size=100&id=54382&format=png&color=000000" style="width:30px;height:30px; filter: invert(1);">'
           : '<img src="https://img.icons8.com/?size=100&id=9313&format=png&color=000000" style="width:30px;height:30px;">';
       };
-      // Add this after theme toggle initialization
+
+      // -------------------------------
+      // Search Initialization
+      // -------------------------------
       function initializeSearch() {
         const searchButton = document.getElementById('searchButton');
         const searchInput = document.getElementById('searchInput');
@@ -497,7 +522,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Initial collection after load
         document.addEventListener('DOMContentLoaded', updateFileElements);
 
-        // Update when new content loads (add this to your fetch completion callbacks)
+        // Update when new content loads
         document.addEventListener('folderContentLoaded', updateFileElements);
 
         function performSearch() {
@@ -532,15 +557,12 @@ document.addEventListener('DOMContentLoaded', () => {
           matches.forEach(originalFile => {
             const clone = originalFile.cloneNode(true);
 
-            // Clone with event handlers
+            // Reattach click handlers using global handlers
             const newViewBtn = clone.querySelector('.view-button');
             const newDownloadBtn = clone.querySelector('.download-button');
-
-            // Get original file data from dataset
             const rawUrl = originalFile.dataset.rawUrl;
             const fileType = originalFile.dataset.fileType;
 
-            // Reattach click handlers properly
             newViewBtn.onclick = () => handleFileView(rawUrl, fileType);
             newDownloadBtn.onclick = () => handleFileDownload(rawUrl, fileType);
 
@@ -548,35 +570,10 @@ document.addEventListener('DOMContentLoaded', () => {
           });
         }
 
-        // Add these helper functions
-        function handleFileView(rawUrl, fileType) {
-          if (fileType === 'pdf') {
-            pdfViewer.src = `https://docs.google.com/gview?url=${encodeURIComponent(rawUrl)}&embedded=true`;
-            pdfModal.style.display = "block";
-          } else if (fileType === 'code') {
-            fetch(rawUrl)
-              .then(response => response.text())
-              .then(code => {
-                codeViewer.textContent = code;
-                codeModal.style.display = "block";
-              });
-          } else if (fileType === 'image') {
-            imageViewer.src = rawUrl;
-            imageModal.style.display = "block";
-          }
-        }
-
-        function handleFileDownload(rawUrl, fileType) {
-          if (fileType === 'code') {
-            copyToClipboardWithNotification(rawUrl);
-          } else {
-            window.open(rawUrl);
-          }
-        }
-
         searchButton.addEventListener('click', performSearch);
         searchInput.addEventListener('input', performSearch);
       }
+
       // Initialize
       fetchFolders();
       initializeSearch();
@@ -586,6 +583,5 @@ document.addEventListener('DOMContentLoaded', () => {
     })
     .catch(error => {
       console.error('Error loading configuration:', error);
-
     });
 });
