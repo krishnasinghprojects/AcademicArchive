@@ -584,4 +584,114 @@ document.addEventListener('DOMContentLoaded', () => {
     .catch(error => {
       console.error('Error loading configuration:', error);
     });
+
+  const aiBtn = document.getElementById('aiChatBtn');
+  const aiModal = document.getElementById('aiModal');
+  const chatInput = document.getElementById('chatInput');
+  const chatMessages = document.getElementById('chatMessages');
+  const sendChatBtn = document.getElementById('sendChat');
+  const closeAiModal = aiModal.querySelector('.close');
+
+  // Fade in
+  function fadeIn(el, duration = 250) {
+    el.style.opacity = 0;
+    el.style.display = 'block';
+    el.style.transition = `opacity ${duration}ms ease-in-out`;
+    requestAnimationFrame(() => {
+      el.style.opacity = 1;
+    });
+  }
+
+  // Fade out
+  function fadeOut(el, duration = 500, callback) {
+    el.style.opacity = 1;
+    el.style.transition = `opacity ${duration}ms ease-in-out`;
+    requestAnimationFrame(() => {
+      el.style.opacity = 0;
+    });
+    setTimeout(() => {
+      el.style.display = 'none';
+      if (callback) callback();
+    }, duration);
+  }
+
+  // Open modal
+  aiBtn.addEventListener('click', () => {
+    aiModal.style.opacity = 0;
+    aiModal.style.display = 'block';
+    aiModal.style.transition = 'opacity 500ms ease-in-out';
+    requestAnimationFrame(() => {
+      aiModal.style.opacity = 1;
+    });
+  });
+
+  // Close modal
+  closeAiModal.addEventListener('click', () => {
+    fadeOut(aiModal, 500);
+  });
+
+  // Send message
+  function sendMessage() {
+    const userMsg = chatInput.value.trim();
+    if (!userMsg) return;
+
+    appendMessage(userMsg, 'user');
+    chatInput.value = '';
+
+    generateBotResponse(userMsg).then(botReply => {
+      appendMessage(botReply, 'bot');
+    });
+  }
+
+  // Append message
+  function appendMessage(message, sender) {
+    const msgEl = document.createElement('div');
+    msgEl.classList.add('chat-message');
+    msgEl.classList.add(sender === 'user' ? 'chat-bot' : 'chat-user');
+    msgEl.style.opacity = 0;
+    msgEl.textContent = message;
+    chatMessages.appendChild(msgEl);
+    requestAnimationFrame(() => {
+      msgEl.style.transition = 'opacity 500ms ease-in-out';
+      msgEl.style.opacity = 1;
+    });
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }
+
+  async function generateBotResponse(userInput) {
+    const payload = {
+      contents: [
+        {
+          parts: [{ text: userInput }]
+        }
+      ]
+    };
+  
+    try {
+      const response = await fetch('/api/gemini', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+  
+      const data = await response.json();
+      console.log("Gemini API response:", data);
+  
+      const textResponse = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+      return textResponse || "🤖 Sorry, no response from Gemini.";
+    } catch (error) {
+      console.error("Error contacting Gemini API:", error);
+      return "⚠️ Error fetching response. Try again.";
+    }
+  }
+  
+
+  // Bind events
+  sendChatBtn.addEventListener('click', sendMessage);
+  chatInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') sendMessage();
+  });
+
 });
