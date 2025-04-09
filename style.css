@@ -36,7 +36,7 @@
    /* Button theme variables for light mode */
    --button-view-bg: #81cdff;    /* Blue */
    --button-download-bg: #75c5cc;/* Green */
-   --button-text-color: #ffffff; /* White */ 
+   --button-text-color: #ffffff; /* White */
 }
 
 /* Apply theme colors */
@@ -776,10 +776,15 @@ img:active {
 .chat-input input {
   flex: 1;
   padding: 8px;
+  background-color: var(--nav-bg);
+  border-radius: 7.5px;
 }
 
 .chat-input button {
-  padding: 8px 12px;
+  padding: 8px 10px;
+  background-color: var(--nav-bg);
+  border-radius: 5px;
+  color: var(--text-color);
 }
 
 .chat-message {
@@ -813,4 +818,7 @@ img:active {
   color: var(--text-color);
   cursor: pointer;
   user-select: none;
+}
+h5{
+  font-weight: 20;
 }

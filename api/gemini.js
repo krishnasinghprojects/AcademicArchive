@@ -4,7 +4,7 @@ export default async function handler(req, res) {
     }
   
     const apiKey = process.env.GEMINI_API_KEY;
-    const modelName = 'tunedModels/academic-mentor-1kcmcng5i7r5';
+    const modelName = 'tunedModels/academic-mentor-vjhii67cxs45';
   
     try {
       const geminiResponse = await fetch(
