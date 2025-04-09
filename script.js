@@ -659,19 +659,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   async function generateBotResponse(userInput) {
-    // Define the system instruction to restrict responses solely to the input content.
-    const systemInstruction = {
-      parts: [
-        { 
-          text: "You are an assistant that only extracts and paraphrases the provided text. " +
-                "Answer only based on the supplied content and do not use any external or prior knowledge." 
-        }
-      ]
-    };
-  
-    // Create the payload including both the system instruction and the user input.
     const payload = {
-      systemInstruction, // Add the system instruction here.
       contents: [
         {
           parts: [{ text: userInput }]
@@ -692,13 +680,14 @@ document.addEventListener('DOMContentLoaded', () => {
       console.log("Gemini API response:", data);
   
       const textResponse = data?.candidates?.[0]?.content?.parts?.[0]?.text;
-      return textResponse || "🤖 Sorry, no response from Gemini.";
+      return textResponse || "🤖 Sorry, no response from A.I.";
     } catch (error) {
       console.error("Error contacting Gemini API:", error);
       return "⚠️ Error fetching response. Try again.";
     }
   }
   
+
   // Bind events
   sendChatBtn.addEventListener('click', sendMessage);
   chatInput.addEventListener('keydown', (e) => {
