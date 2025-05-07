@@ -310,8 +310,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // -------------------------------
       // Image Navigation
       // -------------------------------
-      prevImageBtn.onclick = () => navigateImages(-1);
-      nextImageBtn.onclick = () => navigateImages(1);
+
 
       function navigateImages(direction) {
         currentImageIndex = (currentImageIndex + direction + currentImageList.length) % currentImageList.length;
@@ -584,7 +583,6 @@ document.addEventListener('DOMContentLoaded', () => {
     .catch(error => {
       console.error('Error loading configuration:', error);
     });
-
   const aiBtn = document.getElementById('aiChatBtn');
   const aiModal = document.getElementById('aiModal');
   const chatInput = document.getElementById('chatInput');
