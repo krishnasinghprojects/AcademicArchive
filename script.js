@@ -229,13 +229,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
       function createPinButton(folderPath, element) {
         const pinBtn = document.createElement('img');
-        pinBtn.src = 'https://img.icons8.com/?size=100&id=7873&format=png&color=000000';
+        pinBtn.src = 'https://img.icons8.com/?size=100&id=XghFnrM2lzSW&format=png&color=000000';
         Object.assign(pinBtn.style, {
           position: 'absolute',
           top: '0',
           right: '0',
-          width: '24px',
-          height: '24px',
+          width: '30px',
+          height: '30px',
           cursor: 'pointer',
           opacity: pinnedFolders.includes(folderPath) ? '1' : '0.3',
           filter: 'invert(var(--reverse))',
@@ -355,38 +355,53 @@ document.addEventListener('DOMContentLoaded', () => {
       // -------------------------------
       async function fetchFolders() {
         try {
-          const response = await fetch(rootApiUrl);
-          const items = await response.json();
-          const folderContainer = document.getElementById('folderContainer');
-          folderContainer.innerHTML = '';
-
-          items.filter(item => item.type === "dir").forEach(folder => {
-            const section = createFolderElement();
-            section.dataset.folderPath = folder.name;
-
-            const headingContainer = document.createElement('div');
-            headingContainer.style.position = 'relative';
-
-            const heading = document.createElement('h3');
-            heading.textContent = folder.name;
-            heading.onclick = (e) => handleFolderClick(e, section);
-            headingContainer.appendChild(heading);
-            headingContainer.appendChild(createPinButton(folder.name, section));
-
-            const contentContainer = document.createElement('div');
-            contentContainer.className = 'folder-content';
-            section.append(headingContainer, contentContainer);
-            folderContainer.appendChild(section);
-
-            fetchFolderContents(folder.name, contentContainer);
-          });
-
-          reorderFolders(folderContainer);
+            const response = await fetch(rootApiUrl);
+            const items = await response.json();
+            const folderContainer = document.getElementById('folderContainer');
+            folderContainer.innerHTML = '';
+    
+            items.filter(item => item.type === "dir").forEach(folder => {
+                const section = createFolderElement();
+                section.dataset.folderPath = folder.name;
+    
+                const headingContainer = document.createElement('div');
+                headingContainer.style.position = 'relative';
+    
+                const heading = document.createElement('h3');
+    
+                const folderNameWrapper = document.createElement('div');
+                folderNameWrapper.className = 'folderName'; // Add the specified class
+    
+                const folderImage = document.createElement('img');
+                folderImage.src = 'https://img.icons8.com/?size=100&id=JnHXhz9KQ8RC&format=png&color=000000';
+                folderImage.alt = 'Folder Icon';
+                folderImage.style.width = '40px';
+                folderImage.style.height = '40px';
+                folderImage.style.marginRight = '10px';
+                folderImage.style.verticalAlign = 'middle'; // Keep for initial visual alignment, but CSS will refine
+    
+                folderNameWrapper.appendChild(folderImage);
+                folderNameWrapper.appendChild(document.createTextNode(folder.name));
+    
+                heading.appendChild(folderNameWrapper); // Append the wrapper div to h3
+    
+                heading.onclick = (e) => handleFolderClick(e, section);
+    
+                headingContainer.appendChild(heading);
+                headingContainer.appendChild(createPinButton(folder.name, section));
+    
+                const contentContainer = document.createElement('div');
+                contentContainer.className = 'folder-content';
+                section.append(headingContainer, contentContainer);
+                folderContainer.appendChild(section);
+    
+                fetchFolderContents(folder.name, contentContainer);
+            });
+            reorderFolders(folderContainer);
         } catch (error) {
-          console.error("Error fetching folders:", error);
+            console.error("Error fetching folders:", error);
         }
-      }
-
+    }
       async function fetchFolderContents(folderPath, parentElement) {
         try {
           const response = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${folderPath}`);
@@ -473,6 +488,81 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
 
+
+      const showPinOnlyButton = document.querySelector('.showPinOnly');
+let showOnlyPinned = false;
+
+function updateFileDisplay() {
+  const folderContainer = document.getElementById('folderContainer');
+  const searchInput = document.getElementById('searchInput');
+  const searchResults = document.getElementById('searchResults');
+  if (searchResults.style.display === 'block' && searchInput.value.trim() !== '') {
+    return;
+}
+
+folderContainer.style.display = 'flex';
+searchResults.style.display = 'none';
+
+const allFolderSections = document.querySelectorAll('.folder-section.folder-node');
+
+allFolderSections.forEach(folderSection => {
+    const folderPath = folderSection.dataset.folderPath;
+
+    let shouldDisplayFolder = false;
+
+    if (showOnlyPinned) {
+        if (pinnedFolders.includes(folderPath)) {
+            shouldDisplayFolder = true;
+        }
+    } else {
+        shouldDisplayFolder = true;
+    }
+
+    if (shouldDisplayFolder) {
+        folderSection.style.display = 'block';
+        const filesInFolder = folderSection.querySelectorAll('.file-element');
+        filesInFolder.forEach(file => {
+            file.style.display = '';
+        });
+    } else {
+        folderSection.style.display = 'none';
+    }
+});
+
+const rootFiles = Array.from(document.querySelectorAll('.file-element')).filter(file =>
+    !file.closest('.folder-section')
+);
+
+rootFiles.forEach(file => {
+    const fileId = file.dataset.fileId;
+    const isPinned = pinnedFolders.includes(fileId);
+
+    if (showOnlyPinned) {
+        if (isPinned) {
+            file.style.display = '';
+        } else {
+            file.style.display = 'none';
+        }
+    } else {
+        file.style.display = '';
+    }
+});
+}
+
+
+if (showPinOnlyButton) {
+    showPinOnlyButton.addEventListener('click', () => {
+        showOnlyPinned = !showOnlyPinned;
+
+        if (showOnlyPinned) {
+            showPinOnlyButton.classList.add('active');
+        } else {
+            showPinOnlyButton.classList.remove('active');
+        }
+
+        updateFileDisplay();
+    });
+}
       // -------------------------------
       // Theme Toggle
       // -------------------------------
@@ -692,4 +782,53 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.key === 'Enter') sendMessage();
   });
 
+});
+// Get references to your elements
+const appLogoButton = document.getElementById('appLogoButton');
+const folderContainer = document.querySelector('main');
+const aboutDiv = document.querySelector('.about'); // Use querySelector for class
+
+// State variable to track which section is active
+let isAboutSectionActive = false; // Initially, home/folders are active
+
+// Function to update the display
+function toggleAppContent() {
+    isAboutSectionActive = !isAboutSectionActive; // Toggle the state
+
+    if (isAboutSectionActive) {
+        // Show About, Hide FolderContainer
+        folderContainer.classList.remove('active');
+        // Wait for folderContainer to fade out before truly hiding
+        setTimeout(() => {
+            folderContainer.style.display = 'none';
+            aboutDiv.style.display = 'block'; // Make about visible for transition
+            // Trigger reflow to ensure display change is applied before opacity transition
+            void aboutDiv.offsetWidth;
+            aboutDiv.classList.add('active');
+        }, 300); // Match CSS transition duration
+    } else {
+        // Show FolderContainer, Hide About
+        aboutDiv.classList.remove('active');
+        // Wait for aboutDiv to fade out before truly hiding
+        setTimeout(() => {
+            aboutDiv.style.display = 'none';
+            folderContainer.style.display = 'flex'; // Make folderContainer visible for transition
+            // Ensure folderContainer has the correct display type (flex or block)
+            // Trigger reflow to ensure display change is applied before opacity transition
+            void folderContainer.offsetWidth;
+            folderContainer.classList.add('active');
+        }, 300); // Match CSS transition duration
+    }
+}
+
+// Attach the event listener to the logo button
+if (appLogoButton) {
+    appLogoButton.addEventListener('click', toggleAppContent);
+}
+
+
+document.addEventListener('DOMContentLoaded', () => {
+    folderContainer.classList.add('active');
+    folderContainer.style.display = 'flex'; // Ensure initial display is correct
+    aboutDiv.style.display = 'none'; // Ensure about is hidden initially
 });

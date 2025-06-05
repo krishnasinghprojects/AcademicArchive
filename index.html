@@ -13,7 +13,8 @@
 
   <!-- Open Graph Meta Tags for Social Sharing -->
   <meta property="og:title" content="Academic Archive">
-  <meta property="og:description" content="Explore a digital repository tailored for academic resources. Access PDFs, images, and code files through an engaging, dynamic interface with night mode support.">
+  <meta property="og:description"
+    content="Explore a digital repository tailored for academic resources. Access PDFs, images, and code files through an engaging, dynamic interface with night mode support.">
   <meta property="og:image" content="https://krishnasinghprojects.github.io/AcademicArchive/AA.jpg">
   <meta property="og:url" content="https://krishnasinghprojects.github.io/AcademicArchive/">
   <meta property="og:type" content="website">
@@ -24,31 +25,66 @@
   <title>Academic Archive</title>
 
   <link rel="stylesheet" href="style.css">
-  
+
 </head>
 
 <body>
+  <div class="icons">
+    <button class="showPinOnly pin-toggle-button">
+      <img src="https://img.icons8.com/?size=100&id=60003&format=png&color=000000" alt="Toggle Pinned">
+    </button>
+  </div>
   <nav id="navbar">
     <div class="nav-content">
-      <div class="nav-title" id="name">The Academic Archive</div>
-      
+      <button id="appLogoButton" class="app-logo-button">
+        <img src="Academic Archive Logo.png" alt="AppLogo">
+      </button>
+      <div class="nav-title" id="name">Academic Archive</div>
       <div class="nav-controls">
         <div class="search-container">
           <input type="text" id="searchInput" placeholder="Search files...">
           <button id="searchButton">
-            <img src="https://img.icons8.com/?size=100&id=7695&format=png&color=000000" 
-                 alt="Search" 
-                 class="search-icon">
+            <img src="https://img.icons8.com/?size=100&id=7695&format=png&color=000000" alt="Search"
+              class="search-icon">
           </button>
         </div>
-      <!-- Night mode toggle button -->
-      <button id="themeToggle" aria-label="Toggle Night Mode"></button>
-    </div>
+        <div class="togglebtn">
+          <!-- Night mode toggle button -->
+          <button id="themeToggle" aria-label="Toggle Night Mode"></button>
+        </div>
+      </div>
   </nav>
   <main>
     <!-- Container for dynamically generated folder sections -->
     <div id="folderContainer"></div>
   </main>
+
+  <div class="about main-content-section">
+    <div class="text">
+        <h2>About Academic Archive</h2>
+        <p>Academic Archive is a dynamic web platform that revolutionizes how individuals manage and access their academic materials. By leveraging a GitHub repository, the website dynamically fetches and renders content such as notes, syllabus, and program code, ensuring that all resources are always up-to-date and readily available. This open-source project is built on the principles of accessibility and community contribution, allowing anyone to review the codebase or become a collaborator in the content database.</p>
+        <hr>
+        <h3>Developer</h3>
+        <p>Academic Archive was developed by <strong>Krishna Singh</strong>, a first-year student at BBD University. This project is a testament to a commitment to creating practical, user-centric solutions in the educational technology space.</p>
+        <hr>
+        <h3>Core Features</h3>
+        <ul>
+            <li><strong>Content on Demand:</strong> Seamlessly upload and access a wide array of academic materials, including notes, syllabus, and code, directly from a centralized GitHub repository. This dynamic content delivery ensures instant access to the latest updates.</li>
+            <li><strong>Folder-Based Organization:</strong> Maintain a highly organized digital workspace with intuitive folder structures, enabling streamlined access and efficient management of diverse academic content.</li>
+            <li><strong>Powerful & Responsive Search:</strong> Quickly locate any resource within the archive using a robust and responsive search bar. This feature allows for comprehensive searching across all files, including those deeply nested within folders, significantly boosting productivity.</li>
+            <li><strong>Enhanced User Experience with Integrated Modals:</strong> Engage with content effortlessly through integrated modals designed for viewing PDFs, images, and code snippets, all complemented by smooth transitions for a fluid Browse experience.</li>
+        </ul>
+        <hr>
+        <h3>Supplemental Features & Quality of Life Improvements</h3>
+        <ul>
+            <li><strong>Customizable Interface:</strong> Personalize your viewing experience with a dark/light mode toggle. Additionally, a dedicated <strong>pin button</strong> allows for quick access to frequently used or important folders, keeping essential resources at your fingertips. A new <strong>toggle button for pinned folders</strong> allows users to instantly filter their view to see only pinned items, enhancing focus and privacy.</li>
+            <li><strong>Dynamic Folder Management:</strong> Efficiently navigate through your resources with a dropdown toggle button for main folders, offering a clean interface by collapsing file views until needed. The system also features <strong>auto-collapse functionality</strong>, automatically minimizing other main folders when one is opened to maintain an organized and uncluttered view.</li>
+            <li><strong>Seamless Resource Sharing:</strong> Each file modal includes a convenient <strong>share button</strong>, simplifying the process of distributing academic resources with peers and collaborators.</li>
+            <li><strong>Flexible Repository Management:</strong> For non-technical users, repository details are stored in a JSON file, facilitating easy updates to the repository name or owner. This design ensures that the entire application can be seamlessly transferred, promoting long-term usability and continuity.</li>
+            <li><strong>Collaborative Contribution Model:</strong> Academic Archive thrives on community engagement. The open-source nature of the codebase encourages review and contribution, while the database repository supports multiple collaborators, enabling a collective effort in building a rich and diverse academic resource hub.</li>
+        </ul>
+    </div>
+</div>
 
   <!-- Modal for PDF Viewer -->
   <div id="pdfModal" class="modal">
@@ -78,22 +114,22 @@
     </div>
   </div>
 
-  <button id="aiChatBtn" class="ai-button">
+  <button id="aiChatBtn" class="ai-button invisible">
     <img src="https://img.icons8.com/?size=100&id=CJoPHVQpwEMq&format=png&color=000000" alt="AI" />
   </button>
 
   <!-- AI Chat Modal -->
-<div id="aiModal" class="modal">
-  <div class="modal-content ai-chat-box">
-    <span class="close">&times;</span>
-    <div class="chat-messages" id="chatMessages">
-    </div>
-    <div class="chat-input">
-      <input type="text" id="chatInput" placeholder="Type your message..." />
-      <button id="sendChat">Send</button>
+  <div id="aiModal" class="modal invisible">
+    <div class="modal-content ai-chat-box">
+      <span class="close">&times;</span>
+      <div class="chat-messages" id="chatMessages">
+      </div>
+      <div class="chat-input">
+        <input type="text" id="chatInput" placeholder="Type your message..." />
+        <button id="sendChat">Send</button>
+      </div>
     </div>
   </div>
-</div>
 
   <footer id="footer">
     <h5 style="font-size: 15px"> &#169; The Academic Archive | Krishna Singh | All Rights Reserved</h5>
