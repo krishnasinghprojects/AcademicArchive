@@ -683,6 +683,9 @@ img:active {
     max-width: 200px;
     gap: 5px;
   }
+  .nav-title{
+    display: none;
+  }
   
   #searchInput {
     padding: 6px 10px;
