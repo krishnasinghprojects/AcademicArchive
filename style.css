@@ -50,7 +50,7 @@
 
 /* Apply theme colors */
 body {
-  font-family: 'Times New Roman', Times, serif, sans-serif;
+  font-family: 'Noto Serif', 'Times New Roman', Times, serif;
   margin: 0;
   padding: 0;
   background: var(--bg-color);
@@ -58,6 +58,7 @@ body {
   transition: background var(--transition-time) ease, color var(--transition-time) ease;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
+
 }
 
 /* =====================================================
@@ -76,22 +77,29 @@ body {
 .nav-content {
   max-width: 100%;
   margin: 0 auto;
-  padding: 10px 20px;
+  padding: 0px 5px;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
+.navbarlogo{
+  display: flex;
+ align-items: center;
+  justify-content: center;
+}
+
 .nav-title {
   margin: 15px 0px;
   margin-left: 15px;
-  font-size: 32px;
-  font-weight: bold;
+  font-size: 30px;
+  font-weight: 450;
+  font-style: oblique;
 }
 
 #themeToggle {
-  width: 40px;
-  height: 40px;
+  width: 35px;
+  height: 35px;
   border: 2px var(--text-color) solid;
   border-radius: 50%;
   background-color: var(--nav-bg);
@@ -101,13 +109,14 @@ body {
   align-items: center;
   justify-content: center;
   font-size: 20px;
-  margin-left: 10px;
+  margin-right: 10px;
 }
 
 /* =====================================================
    Main Container
 ===================================================== */
 main {
+  justify-content: center;
   padding: 20px;
   max-width: 80%;
   margin: 20px auto 0 auto; /* leave space for navbar */
@@ -147,7 +156,8 @@ main {
 
 /* Folder Heading */
 .folder-section h3 {
-  font-size: 25px;
+  font-size: 20px;
+  font-style: italic;
   transition: color 0.3s ease;
   color: var(--text-color);
 }
@@ -271,6 +281,7 @@ li.file-item:hover {
 
 li.file-item .file-title {
   font-weight: bold;
+  font-style: italic;
   flex: 1;
   margin-right: 10px;
   margin-left: 5px;
@@ -518,12 +529,16 @@ button.download-button {
   justify-content: center;
   position: fixed;
   bottom: 0;
+  height: 40px;
   width: 100%;
-  height: 60px;
   text-align: center;
   background: var(--nav-bg);
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
   transition: background var(--transition-time) ease;
+}
+h5{
+  font-weight: 400;
+  font-style: italic;
 }
 img{
   filter:invert(var(--reverse));
@@ -539,6 +554,9 @@ img:active {
 
   h4 {
       font-size: 0.75rem; /* Adjust as needed */
+  }
+  h5{
+    font-size: 0.75rem !important;
   }
   li.file-item{
     font-size: 0.6rem;
@@ -620,7 +638,6 @@ img:active {
   position: relative;
   margin: 12.5px;
 }
-
 #searchButton {
   width: 35px;
   height: 35px;
@@ -631,7 +648,7 @@ img:active {
   border: none;
   cursor: pointer;
   transition: transform var(--transition-time) ease;
-  margin-right: 0px;
+  margin-right: -5px;
   border: solid var(--text-color);
 }
 #searchButton:hover .search-icon {
@@ -641,10 +658,9 @@ img:active {
 #searchResults {
   display: grid;
   gap: 10px;
-  padding: 20px;
+  padding: 0px;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   animation: fadeIn 0.3s ease;
-  margin-top: 20px;
 }
 
 .search-result-item {
@@ -699,7 +715,7 @@ img:active {
   
   #searchButton {
     padding: 6px;
-    margin-right: 5px;
+    margin-right: -5px;
   }
   
   .search-icon {
@@ -727,6 +743,14 @@ img:active {
   .search-icon {
     width: 20px;
     height: 20px;
+  }
+  #searchInput.active {
+    width: 150px;
+    opacity: 1;
+    visibility: visible;
+    padding: 0 15px;
+    position: relative;
+    margin: 12.5px;
   }
 }
 
@@ -872,9 +896,6 @@ img:active {
   cursor: pointer;
   user-select: none;
 }
-h5{
-  font-weight: 20;
-}
 .invisible{
   display: none;
 }
@@ -923,7 +944,7 @@ h5{
   bottom: 75px;
   right: 10px;
   padding: 7.5px;
-  border: white 2.5px solid;
+  border: var(--text-color) 2.5px solid;
   border-radius: 7.5px;
   z-index: 10000;
 }
@@ -934,7 +955,7 @@ h5{
   border: none;
   padding: 0;
   cursor: pointer;
-  width: 100px;
+  width: 70px;
   height: auto;
   display: flex;
   justify-content: center;
@@ -942,9 +963,8 @@ h5{
 }
 
 .app-logo-button img {
-  width: 100px;
+  width: 80px;
   height: auto;
-  display: block;
 }
 
 /* General styles for content sections */
@@ -969,26 +989,27 @@ h5{
 .main-content-section.active {
   opacity: 1;
   pointer-events: auto;
+  align-items: center;
   /* display property is managed by JavaScript in toggleAppContent() */
 }
 
 .main-content-section h2 {
   color: var(--text-color);
   text-align: center;
-  font-size: 32px;
+  font-size: 28px;
   margin-bottom: 25px; /* Adds space below the main heading */
 }
 
 .main-content-section h3 {
   color: var(--text-color);
-  font-size: 24px; /* Slightly smaller than h2, but still prominent */
+  font-size: 22px; /* Slightly smaller than h2, but still prominent */
   margin-top: 30px; /* Adds space above sub-headings */
   margin-bottom: 15px; /* Adds space below sub-headings */
 }
 
 .main-content-section p {
   color: var(--text-color);
-  font-size: 20px;
+  font-size: 16px;
   text-align: justify;
   line-height: 1.6; /* Improves readability by increasing line spacing */
   margin-bottom: 20px; /* Adds space between paragraphs */
@@ -1003,7 +1024,7 @@ h5{
 
 .main-content-section li {
   color: var(--text-color);
-  font-size: 20px; /* Matches the font size of paragraphs */
+  font-size: 16px; /* Matches the font size of paragraphs */
   line-height: 1.6; /* Matches line height for consistency */
   margin-bottom: 10px; /* Adds space between list items */
 }

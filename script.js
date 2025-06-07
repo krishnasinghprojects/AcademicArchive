@@ -47,6 +47,8 @@ document.addEventListener('DOMContentLoaded', () => {
           searchActive = false;
         }
       });
+      
+      
 
       // Close search when clicking outside
       document.addEventListener('click', (e) => {
@@ -402,10 +404,10 @@ document.addEventListener('DOMContentLoaded', () => {
             folderNameWrapper.className = 'folderName';
 
             const folderImage = document.createElement('img');
-            folderImage.src = 'https://img.icons8.com/?size=100&id=JnHXhz9KQ8RC&format=png&color=000000';
+            folderImage.src = 'https://img.icons8.com/?size=100&id=2939&format=png&color=000000';
             folderImage.alt = 'Folder Icon';
-            folderImage.style.width = '40px';
-            folderImage.style.height = '40px';
+            folderImage.style.width = '35px';
+            folderImage.style.height = '35px';
             folderImage.style.marginRight = '10px';
             folderImage.style.verticalAlign = 'middle';
 
@@ -413,7 +415,7 @@ document.addEventListener('DOMContentLoaded', () => {
             folderNameWrapper.appendChild(document.createTextNode(folder.name));
 
             heading.appendChild(folderNameWrapper);
-            heading.onclick = (e) => handleFolderClick(e, section);
+            folderNameWrapper.onclick = (e) => handleFolderClick(e, section);
 
             headingContainer.appendChild(heading);
             headingContainer.appendChild(createPinButton(folder.name, section));
@@ -600,16 +602,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
       rootElement.setAttribute('data-theme', savedTheme);
       themeToggle.innerHTML = savedTheme === 'dark'
-        ? '<img src="https://img.icons8.com/?size=100&id=54382&format=png&color=000000" style="width:30px;height:30px; filter: invert(1);">'
-        : '<img src="https://img.icons8.com/?size=100&id=9313&format=png&color=000000" style="width:30px;height:30px;">';
+        ? '<img src="https://img.icons8.com/?size=100&id=54382&format=png&color=000000" style="width:25px;height:25px; filter: invert(1);">'
+        : '<img src="https://img.icons8.com/?size=100&id=9313&format=png&color=000000" style="width:25px;height:25px;">';
 
       themeToggle.onclick = () => {
         const newTheme = rootElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
         rootElement.setAttribute('data-theme', newTheme);
         localStorage.setItem('theme', newTheme);
         themeToggle.innerHTML = newTheme === 'dark'
-          ? '<img src="https://img.icons8.com/?size=100&id=54382&format=png&color=000000" style="width:30px;height:30px; filter: invert(1);">'
-          : '<img src="https://img.icons8.com/?size=100&id=9313&format=png&color=000000" style="width:30px;height:30px;">';
+          ? '<img src="https://img.icons8.com/?size=100&id=54382&format=png&color=000000" style="width:25px;height:25px; filter: invert(1);">'
+          : '<img src="https://img.icons8.com/?size=100&id=9313&format=png&color=000000" style="width:25px;height:25px;">';
       };
 
       // -------------------------------
@@ -660,7 +662,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
           // Show search results container
           searchResults.style.display = 'block';
-          searchResults.innerHTML = '';
+          searchResults.innerHTML = '<h2>Search Results :</h2>';
 
           // Find matches
           const matches = allFileElements.filter(file => {
@@ -669,7 +671,10 @@ document.addEventListener('DOMContentLoaded', () => {
           });
 
           console.log('Found matches:', matches.length);
+          if (matches.length === 0) {
+            searchResults.innerHTML = '<h2>No matching files were found.</h2>';
 
+          }
           // Display matches
           matches.forEach(originalFile => {
             const clone = originalFile.cloneNode(true);
