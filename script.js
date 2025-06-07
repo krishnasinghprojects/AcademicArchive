@@ -3,9 +3,8 @@ document.addEventListener('DOMContentLoaded', () => {
   fetch('data.json')
     .then(response => response.json())
     .then(data => {
-      const repoOwner = data.repoOwner;
-      const repoName = data.repoName;
-      const rootApiUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/contents/`;
+
+      const repoConfigs = data.repoConfigs;
       // Modal elements
       const pdfModal = document.getElementById('pdfModal');
       const closeModal = document.getElementById('closeModal');
@@ -294,11 +293,25 @@ document.addEventListener('DOMContentLoaded', () => {
       function createFileItem(fileName) {
         const li = document.createElement('li');
         li.className = 'file-item';
-        li.innerHTML = `
+
+        const isPdfFile = fileName.toLowerCase().endsWith('.pdf');
+        const fileIsCode = isCodeFile(fileName); // Use your existing isCodeFile function
+
+        let innerHtmlContent = ``;
+
+        if (isPdfFile) {
+          innerHtmlContent += `<img src="https://img.icons8.com/?size=25&id=59859&format=png&color=000000" alt="PDF icon" class="file-icon">`;
+        } else if (fileIsCode) { // Add this condition for code files
+          innerHtmlContent += `<img src="https://img.icons8.com/?size=20&id=OTlhcalmkiBX&format=png&color=000000" alt="Code icon" class="file-icon code-file-icon">`;
+        }
+
+        innerHtmlContent += `
           <span class="file-title">${fileName}</span>
           <button class="view-button">View</button>
-          <button class="download-button">${isCodeFile(fileName) ? 'Copy' : 'Download'}</button>
+          <button class="download-button">${fileIsCode ? 'Copy' : 'Download'}</button>
         `;
+
+        li.innerHTML = innerHtmlContent;
         return li;
       }
 
@@ -353,61 +366,76 @@ document.addEventListener('DOMContentLoaded', () => {
       // -------------------------------
       // Main Fetch Functions
       // -------------------------------
+
       async function fetchFolders() {
+
+
         try {
-            const response = await fetch(rootApiUrl);
-            const items = await response.json();
-            const folderContainer = document.getElementById('folderContainer');
-            folderContainer.innerHTML = '';
-    
-            items.filter(item => item.type === "dir").forEach(folder => {
-                const section = createFolderElement();
-                section.dataset.folderPath = folder.name;
-    
-                const headingContainer = document.createElement('div');
-                headingContainer.style.position = 'relative';
-    
-                const heading = document.createElement('h3');
-    
-                const folderNameWrapper = document.createElement('div');
-                folderNameWrapper.className = 'folderName'; // Add the specified class
-    
-                const folderImage = document.createElement('img');
-                folderImage.src = 'https://img.icons8.com/?size=100&id=JnHXhz9KQ8RC&format=png&color=000000';
-                folderImage.alt = 'Folder Icon';
-                folderImage.style.width = '40px';
-                folderImage.style.height = '40px';
-                folderImage.style.marginRight = '10px';
-                folderImage.style.verticalAlign = 'middle'; // Keep for initial visual alignment, but CSS will refine
-    
-                folderNameWrapper.appendChild(folderImage);
-                folderNameWrapper.appendChild(document.createTextNode(folder.name));
-    
-                heading.appendChild(folderNameWrapper); // Append the wrapper div to h3
-    
-                heading.onclick = (e) => handleFolderClick(e, section);
-    
-                headingContainer.appendChild(heading);
-                headingContainer.appendChild(createPinButton(folder.name, section));
-    
-                const contentContainer = document.createElement('div');
-                contentContainer.className = 'folder-content';
-                section.append(headingContainer, contentContainer);
-                folderContainer.appendChild(section);
-    
-                fetchFolderContents(folder.name, contentContainer);
-            });
-            reorderFolders(folderContainer);
+          const fetchPromises = repoConfigs.map(repo =>
+            fetch(`https://api.github.com/repos/${repo.owner}/${repo.name}/contents/`)
+              .then(response => response.json())
+              .then(data => data.map(item => ({
+                ...item,
+                repoOwner: repo.owner,
+                repoName: repo.name
+              })))
+          );
+
+          const allItemsArrays = await Promise.all(fetchPromises);
+          const items = allItemsArrays.flat();
+
+          const folderContainer = document.getElementById('folderContainer');
+          folderContainer.innerHTML = '';
+
+          items.filter(item => item.type === "dir").forEach(folder => {
+            const section = createFolderElement();
+            section.dataset.folderPath = folder.name;
+            section.dataset.repoOwner = folder.repoOwner;
+            section.dataset.repoName = folder.repoName;
+
+            const headingContainer = document.createElement('div');
+            headingContainer.style.position = 'relative';
+
+            const heading = document.createElement('h3');
+
+            const folderNameWrapper = document.createElement('div');
+            folderNameWrapper.className = 'folderName';
+
+            const folderImage = document.createElement('img');
+            folderImage.src = 'https://img.icons8.com/?size=100&id=JnHXhz9KQ8RC&format=png&color=000000';
+            folderImage.alt = 'Folder Icon';
+            folderImage.style.width = '40px';
+            folderImage.style.height = '40px';
+            folderImage.style.marginRight = '10px';
+            folderImage.style.verticalAlign = 'middle';
+
+            folderNameWrapper.appendChild(folderImage);
+            folderNameWrapper.appendChild(document.createTextNode(folder.name));
+
+            heading.appendChild(folderNameWrapper);
+            heading.onclick = (e) => handleFolderClick(e, section);
+
+            headingContainer.appendChild(heading);
+            headingContainer.appendChild(createPinButton(folder.name, section));
+
+            const contentContainer = document.createElement('div');
+            contentContainer.className = 'folder-content';
+            section.append(headingContainer, contentContainer);
+            folderContainer.appendChild(section);
+
+            fetchFolderContents(folder.repoOwner, folder.repoName, folder.name, contentContainer);
+          });
+          reorderFolders(folderContainer);
         } catch (error) {
-            console.error("Error fetching folders:", error);
+          console.error("Error fetching folders:", error);
         }
-    }
-      async function fetchFolderContents(folderPath, parentElement) {
+      }
+
+      async function fetchFolderContents(repoOwner, repoName, folderPath, parentElement) {
         try {
           const response = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${folderPath}`);
           const items = await response.json();
 
-          // Filter out unwanted files
           const validItems = items.filter(item => {
             if (item.name === '.DS_Store') return false;
             if (item.type === 'file') {
@@ -430,7 +458,6 @@ document.addEventListener('DOMContentLoaded', () => {
               const li = createFileItem(item.name);
               const rawUrl = `https://raw.githubusercontent.com/${repoOwner}/${repoName}/master/${folderPath}/${item.name}`;
 
-              // Add dataset attributes here ▼
               li.dataset.rawUrl = rawUrl;
               li.dataset.fileType = isCodeFile(item.name) ? 'code' :
                 item.name.toLowerCase().endsWith('.pdf') ? 'pdf' : 'image';
@@ -446,21 +473,23 @@ document.addEventListener('DOMContentLoaded', () => {
               }
 
               fileList.appendChild(li);
-
-              // Dispatch event to update file collection
               document.dispatchEvent(new Event('folderContentLoaded'));
+
             } else if (item.type === "dir") {
               const nestedFolder = createFolderElement(true);
-              nestedFolder.dataset.folderPath = `${folderPath}/${item.name}`;
+              const newFolderPath = `${folderPath}/${item.name}`;
+              nestedFolder.dataset.folderPath = newFolderPath;
+              nestedFolder.dataset.repoOwner = repoOwner;
+              nestedFolder.dataset.repoName = repoName;
 
               const folderLi = document.createElement('li');
               folderLi.className = 'file-item';
-              folderLi.dataset.rawUrl = `https://github.com/${repoOwner}/${repoName}/tree/master/${folderPath}/${item.name}`;
+              folderLi.dataset.rawUrl = `https://github.com/${repoOwner}/${repoName}/tree/master/${newFolderPath}`;
               folderLi.dataset.fileType = 'folder';
               folderLi.innerHTML = `
-                <span class="file-title">${item.name}</span>
-                <button class="view-button">Open</button>
-              `;
+                        <span class="file-title">${item.name}</span>
+                        <button class="view-button">Open</button>
+                    `;
               allFileElements.push(folderLi);
 
               const headingContainer = document.createElement('div');
@@ -477,92 +506,91 @@ document.addEventListener('DOMContentLoaded', () => {
               nestedFolder.append(headingContainer, contentContainer);
               nestedContainer.appendChild(nestedFolder);
 
-              fetchFolderContents(`${folderPath}/${item.name}`, contentContainer);
-
+              fetchFolderContents(repoOwner, repoName, newFolderPath, contentContainer);
               document.dispatchEvent(new Event('folderContentLoaded'));
             }
           }
           reorderFolders(nestedContainer);
         } catch (error) {
-          console.error(`Error fetching ${folderPath}:`, error);
+          console.error(`Error fetching ${folderPath} from ${repoOwner}/${repoName}:`, error);
         }
       }
 
 
       const showPinOnlyButton = document.querySelector('.showPinOnly');
-let showOnlyPinned = false;
+      let showOnlyPinned = false;
 
-function updateFileDisplay() {
-  const folderContainer = document.getElementById('folderContainer');
-  const searchInput = document.getElementById('searchInput');
-  const searchResults = document.getElementById('searchResults');
-  if (searchResults.style.display === 'block' && searchInput.value.trim() !== '') {
-    return;
-}
+      function updateFileDisplay() {
+        const folderContainer = document.getElementById('folderContainer');
+        const searchInput = document.getElementById('searchInput');
+        const searchResults = document.getElementById('searchResults');
+        if (searchResults.style.display === 'block' && searchInput.value.trim() !== '') {
+          return;
+        }
 
-folderContainer.style.display = 'flex';
-searchResults.style.display = 'none';
+        folderContainer.style.display = 'flex';
+        searchResults.style.display = 'none';
 
-const allFolderSections = document.querySelectorAll('.folder-section.folder-node');
+        const allFolderSections = document.querySelectorAll('.folder-section.folder-node');
 
-allFolderSections.forEach(folderSection => {
-    const folderPath = folderSection.dataset.folderPath;
+        allFolderSections.forEach(folderSection => {
+          const folderPath = folderSection.dataset.folderPath;
 
-    let shouldDisplayFolder = false;
+          let shouldDisplayFolder = false;
 
-    if (showOnlyPinned) {
-        if (pinnedFolders.includes(folderPath)) {
+          if (showOnlyPinned) {
+            if (pinnedFolders.includes(folderPath)) {
+              shouldDisplayFolder = true;
+            }
+          } else {
             shouldDisplayFolder = true;
-        }
-    } else {
-        shouldDisplayFolder = true;
-    }
+          }
 
-    if (shouldDisplayFolder) {
-        folderSection.style.display = 'block';
-        const filesInFolder = folderSection.querySelectorAll('.file-element');
-        filesInFolder.forEach(file => {
-            file.style.display = '';
+          if (shouldDisplayFolder) {
+            folderSection.style.display = 'block';
+            const filesInFolder = folderSection.querySelectorAll('.file-element');
+            filesInFolder.forEach(file => {
+              file.style.display = '';
+            });
+          } else {
+            folderSection.style.display = 'none';
+          }
         });
-    } else {
-        folderSection.style.display = 'none';
-    }
-});
 
-const rootFiles = Array.from(document.querySelectorAll('.file-element')).filter(file =>
-    !file.closest('.folder-section')
-);
+        const rootFiles = Array.from(document.querySelectorAll('.file-element')).filter(file =>
+          !file.closest('.folder-section')
+        );
 
-rootFiles.forEach(file => {
-    const fileId = file.dataset.fileId;
-    const isPinned = pinnedFolders.includes(fileId);
+        rootFiles.forEach(file => {
+          const fileId = file.dataset.fileId;
+          const isPinned = pinnedFolders.includes(fileId);
 
-    if (showOnlyPinned) {
-        if (isPinned) {
+          if (showOnlyPinned) {
+            if (isPinned) {
+              file.style.display = '';
+            } else {
+              file.style.display = 'none';
+            }
+          } else {
             file.style.display = '';
-        } else {
-            file.style.display = 'none';
-        }
-    } else {
-        file.style.display = '';
-    }
-});
-}
+          }
+        });
+      }
 
 
-if (showPinOnlyButton) {
-    showPinOnlyButton.addEventListener('click', () => {
-        showOnlyPinned = !showOnlyPinned;
+      if (showPinOnlyButton) {
+        showPinOnlyButton.addEventListener('click', () => {
+          showOnlyPinned = !showOnlyPinned;
 
-        if (showOnlyPinned) {
+          if (showOnlyPinned) {
             showPinOnlyButton.classList.add('active');
-        } else {
+          } else {
             showPinOnlyButton.classList.remove('active');
-        }
+          }
 
-        updateFileDisplay();
-    });
-}
+          updateFileDisplay();
+        });
+      }
       // -------------------------------
       // Theme Toggle
       // -------------------------------
@@ -754,7 +782,7 @@ if (showPinOnlyButton) {
         }
       ]
     };
-  
+
     try {
       const response = await fetch('/api/gemini', {
         method: 'POST',
@@ -763,10 +791,10 @@ if (showPinOnlyButton) {
         },
         body: JSON.stringify(payload)
       });
-  
+
       const data = await response.json();
       console.log("Gemini API response:", data);
-  
+
       const textResponse = data?.candidates?.[0]?.content?.parts?.[0]?.text;
       return textResponse || "🤖 Sorry, no response from A.I.";
     } catch (error) {
@@ -774,7 +802,7 @@ if (showPinOnlyButton) {
       return "⚠️ Error fetching response. Try again.";
     }
   }
-  
+
 
   // Bind events
   sendChatBtn.addEventListener('click', sendMessage);
@@ -793,42 +821,42 @@ let isAboutSectionActive = false; // Initially, home/folders are active
 
 // Function to update the display
 function toggleAppContent() {
-    isAboutSectionActive = !isAboutSectionActive; // Toggle the state
+  isAboutSectionActive = !isAboutSectionActive; // Toggle the state
 
-    if (isAboutSectionActive) {
-        // Show About, Hide FolderContainer
-        folderContainer.classList.remove('active');
-        // Wait for folderContainer to fade out before truly hiding
-        setTimeout(() => {
-            folderContainer.style.display = 'none';
-            aboutDiv.style.display = 'block'; // Make about visible for transition
-            // Trigger reflow to ensure display change is applied before opacity transition
-            void aboutDiv.offsetWidth;
-            aboutDiv.classList.add('active');
-        }, 300); // Match CSS transition duration
-    } else {
-        // Show FolderContainer, Hide About
-        aboutDiv.classList.remove('active');
-        // Wait for aboutDiv to fade out before truly hiding
-        setTimeout(() => {
-            aboutDiv.style.display = 'none';
-            folderContainer.style.display = 'flex'; // Make folderContainer visible for transition
-            // Ensure folderContainer has the correct display type (flex or block)
-            // Trigger reflow to ensure display change is applied before opacity transition
-            void folderContainer.offsetWidth;
-            folderContainer.classList.add('active');
-        }, 300); // Match CSS transition duration
-    }
+  if (isAboutSectionActive) {
+    // Show About, Hide FolderContainer
+    folderContainer.classList.remove('active');
+    // Wait for folderContainer to fade out before truly hiding
+    setTimeout(() => {
+      folderContainer.style.display = 'none';
+      aboutDiv.style.display = 'block'; // Make about visible for transition
+      // Trigger reflow to ensure display change is applied before opacity transition
+      void aboutDiv.offsetWidth;
+      aboutDiv.classList.add('active');
+    }, 300); // Match CSS transition duration
+  } else {
+    // Show FolderContainer, Hide About
+    aboutDiv.classList.remove('active');
+    // Wait for aboutDiv to fade out before truly hiding
+    setTimeout(() => {
+      aboutDiv.style.display = 'none';
+      folderContainer.style.display = 'flex'; // Make folderContainer visible for transition
+      // Ensure folderContainer has the correct display type (flex or block)
+      // Trigger reflow to ensure display change is applied before opacity transition
+      void folderContainer.offsetWidth;
+      folderContainer.classList.add('active');
+    }, 300); // Match CSS transition duration
+  }
 }
 
 // Attach the event listener to the logo button
 if (appLogoButton) {
-    appLogoButton.addEventListener('click', toggleAppContent);
+  appLogoButton.addEventListener('click', toggleAppContent);
 }
 
 
 document.addEventListener('DOMContentLoaded', () => {
-    folderContainer.classList.add('active');
-    folderContainer.style.display = 'flex'; // Ensure initial display is correct
-    aboutDiv.style.display = 'none'; // Ensure about is hidden initially
+  folderContainer.classList.add('active');
+  folderContainer.style.display = 'flex'; // Ensure initial display is correct
+  aboutDiv.style.display = 'none'; // Ensure about is hidden initially
 });

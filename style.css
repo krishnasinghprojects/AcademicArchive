@@ -3,26 +3,29 @@
 ===================================================== */
 :root {
   /* Light mode colors using blue tones */
-  --bg-color: hsl(210, 100%, 95%);             /* Very light blue */
-  --primary-color: #ffffff;                     /* Light blue */
-  --text-color: #000000;                        /* Dark text */
-  --nav-bg: rgba(227, 243, 255, 0.8);             /* Semi-transparent light blue */
-  --toggle-bg: rgba(244, 254, 255, 0.8);                         /* Light blue for toggle */
-  --toggle-icon-color: #666666;
-  --folder-bg: #effaff;                         /* Blue folder background */
-  --folder-text: #ffffff;                       /* White folder text */
+  --bg-color: hsl(210, 30%, 97%);             /* Very light, desaturated blue for a soft background */
+  --primary-color: #ffffff;                     /* Pure white for main content areas (folders, nav bar) for crispness */
+  --text-color: #333333;                        /* Soft dark grey for main text, easier on eyes than pure black */
+  --nav-bg: rgba(255, 255, 255, 0.95);             /* Slightly transparent pure white for a clean, airy navigation bar */
+  --toggle-bg: #f8fcfd;                         /* Very light, almost white blue for toggle backgrounds/hover states */
+  --toggle-icon-color: #555555;                 /* Mid-grey for subtle yet visible icons */
+  --folder-bg: #cecfcfa3;                         /* Dark blue for the folder icon itself, providing contrast */
+  --folder-text: #333333;                       /* Soft dark grey for folder names, consistent with main text */
+  --star-color: #FFD700;                        /* Gold for the star icon, making it pop without being garish */
+  --border-color: #e0e0e0;                      /* Light grey for subtle borders on containers/elements */
   --transition-time: 0.5s;
   --reverse:0;
   --normal:1;
+
   /* Button theme variables for light mode */
-  --button-view-bg: #81cdff;    /* Blue */
-  --button-download-bg: #75c5cc;/* Green */
-  --button-text-color: #ffffff; /* White */
+  --button-view-bg: #4A90E2;    /* A professional, vibrant mid-blue for primary actions */
+  --button-download-bg: #50B8B8;/* A calm, slightly desaturated teal/cyan for secondary actions, cohesive with blue */
+  --button-text-color: #ffffff; /* White text for contrast on colored buttons */
 
-  --textbox-user: rgba(210, 235, 250, 0.9);/* User textbox color (light) */
-  --textbox-bot: rgba(200, 220, 240, 0.9); /* Bot textbox color (light) */
+  /* Textbox colors for light mode */
+  --textbox-user: rgba(230, 245, 255, 0.9);/* Very light blue, soft for user input */
+  --textbox-bot: rgba(220, 235, 250, 0.9); /* Slightly different very light blue for bot output, subtle distinction */
 }
-
 [data-theme="dark"] {
   /* Dark mode using only the second theme’s shades */
   --bg-color: #222;                      /* Dark background (from primary-bg) */
@@ -230,6 +233,7 @@ main {
   border: 1px solid #ccc;
   border-radius: 4px;
   transition: transform 0.2s ease;
+  filter: none !important;
 }
 
 /* Pin Button Transition */
@@ -269,6 +273,7 @@ li.file-item .file-title {
   font-weight: bold;
   flex: 1;
   margin-right: 10px;
+  margin-left: 5px;
 }
 
 li.file-item button {
