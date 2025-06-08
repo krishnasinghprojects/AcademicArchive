@@ -588,7 +588,7 @@ img:active {
   position: absolute;
   right: 0;
   z-index: 2;
-  margin-right: 20px;
+  margin-right: 0px;
 }
 .search-icon {
   width: 20px;
@@ -745,7 +745,7 @@ img:active {
     height: 20px;
   }
   #searchInput.active {
-    width: 150px;
+    width: 130px;
     opacity: 1;
     visibility: visible;
     padding: 0 15px;
@@ -900,10 +900,13 @@ img:active {
   display: none;
 }
 .pin-toggle-button {
-  width: 40px;   /* Set a fixed width for the button */
-  height: 40px;  /* Set a fixed height for the button to make it square */
+  width: 35px;   /* Set a fixed width for the button */
+  height: 35px;  /* Set a fixed height for the button to make it square */
   padding: 0;    /* Remove default button padding */
-  border: none;  /* Remove default button border */
+  border: solid 2px var(--text-color);
+  border-radius: 50%;
+  margin-left: 0px;
+  margin-right: 10px;
   background: none; /* Remove default button background */
   cursor: pointer;
   display: flex; /* Use flexbox to center the image */
@@ -912,7 +915,7 @@ img:active {
 }
 
 .pin-toggle-button img {
-  width: 100%;   /* Make the image fill the button's width */
+  width: 80%;   /* Make the image fill the button's width */
   height: 100%;  /* Make the image fill the button's height */
   object-fit: contain; /* Ensures the image scales down to fit without cropping */
   filter: invert(var(--reverse)); /* Apply your color filter */
