@@ -18,13 +18,20 @@
   --normal:1;
 
   /* Button theme variables for light mode */
-  --button-view-bg: #4A90E2;    /* A professional, vibrant mid-blue for primary actions */
-  --button-download-bg: #50B8B8;/* A calm, slightly desaturated teal/cyan for secondary actions, cohesive with blue */
+  --button-view-bg: #81818191;
+  --button-download-bg: #555555;/* A calm, slightly desaturated teal/cyan for secondary actions, cohesive with blue */
   --button-text-color: #ffffff; /* White text for contrast on colored buttons */
 
   /* Textbox colors for light mode */
   --textbox-user: rgba(230, 245, 255, 0.9);/* Very light blue, soft for user input */
   --textbox-bot: rgba(220, 235, 250, 0.9); /* Slightly different very light blue for bot output, subtle distinction */
+  --gradient: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0) 0%,            /* Fully transparent at the very start */
+    rgba(0, 0, 0, 0.1) 25%,         /* Slightly visible as it approaches center */
+    rgba(0, 0, 0, 0.8) 50%,         /* Much darker/thicker in the center */
+    rgba(0, 0, 0, 0.1) 75%,         /* Tapers off again */
+    rgba(0, 0, 0, 0) 100%   );
 }
 [data-theme="dark"] {
   /* Dark mode using only the second theme’s shades */
@@ -40,12 +47,22 @@
   --reverse:1;
   --normal:0;
    /* Button theme variables for light mode */
-   --button-view-bg: #81cdff;    /* Blue */
-   --button-download-bg: #75c5cc;/* Green */
-   --button-text-color: #ffffff; /* White */
+   --button-view-bg: #fffffff1;
+   --button-download-bg: #d4d4d4d4;
+   --button-text-color: #000000; /* White */
 
    --textbox-user: rgba(82, 82, 82, 0.9);   /* User textbox color (dark) */
   --textbox-bot: rgba(72, 72, 72, 0.9);    /* Bot textbox color (dark) */
+
+  --gradient:linear-gradient(90deg, 
+  rgba(255, 255, 255, 0) 0%,      /* Fully transparent at the very start */
+  rgba(255, 255, 255, 0.1) 25%,   /* Slightly visible as it approaches center */
+  rgba(255, 255, 255, 0.8) 50%,   /* Much brighter/thicker in the center */
+  rgba(255, 255, 255, 0.1) 75%,   /* Tapers off again */
+  rgba(255, 255, 255, 0) 100%     /* Fully transparent at the very end */
+);
+
+
 }
 
 /* Apply theme colors */
@@ -165,7 +182,34 @@ main {
   display: flex;
   align-items: center;
 }
-/* Nested Folders Container as Flex */
+
+.nested-folders {
+  column-count: 2;
+  column-gap: 20px;
+  margin-top: 15px;
+  margin-left: 7.5%;
+  margin-right: 7.5%;
+}
+
+.nested-folder {
+  break-inside: avoid; 
+  background: var(--folder-bg);
+  color: var(--folder-text);
+  padding: 10px;
+  border: 1.5px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  margin-bottom: 20px; 
+  transition: all 0.5s ease;
+  animation: folderFadeIn 0.5s ease forwards;
+  width: 100%; 
+  box-sizing: border-box;
+}
+
+/* Your original flex property is no longer needed: */
+/* flex: 1 1 400px; --- This is removed as it only applies to flexbox layouts. */
+@media (max-width: 767px) {
+  /* Nested Folders Container as Flex */
 .nested-folders {
   display: flex;
   flex-wrap: wrap;
@@ -191,7 +235,7 @@ main {
   transition: all 0.5s ease;
   animation: folderFadeIn 0.5s ease forwards;
 }
-
+}
 .nested-folder h4 {
   margin: 0 0 10px 0;
   text-align: center;
@@ -298,11 +342,13 @@ li.file-item button {
 
 /* Updated Button Styles Using Theme Variables */
 button.view-button {
+  font-family: 'Noto Serif', 'Times New Roman', Times, serif;
   background-color: var(--button-view-bg, #007acc);
   color: var(--button-text-color, #fff);
 }
 
 button.download-button {
+  font-family: 'Noto Serif', 'Times New Roman', Times, serif;
   background-color: var(--button-download-bg, #28a745);
   color: var(--button-text-color, #fff);
 }
@@ -911,7 +957,7 @@ img:active {
   cursor: pointer;
   display: flex; /* Use flexbox to center the image */
   justify-content: center;
-  align-items: center;
+  align-items: center; 
 }
 
 .pin-toggle-button img {
@@ -1041,4 +1087,16 @@ img:active {
   transform: translateY(20px);
   animation: folderFadeIn 0.5s ease forwards;
   transition: transform 0.5s ease, order 0.5s ease, box-shadow 0.3s ease;
+}
+
+.break {
+  width: 100%;
+  height: 2.5px; /* You can increase this height if you want the "ray" to be visually thicker overall */
+  margin: 5px auto; /* Keeps it centered horizontally */
+  
+  /* Ray-like appearance: thicker in center, thinner at sides */
+  background: var(--gradient);
+  border: 0px solid !important;
+  border-radius: 2px;
+  animation: lineReveal 0.8s ease-out forwards;
 }
