@@ -192,6 +192,7 @@ main {
 }
 
 .nested-folder {
+  min-width: fit-content;
   break-inside: avoid; 
   background: var(--folder-bg);
   color: var(--folder-text);
@@ -208,7 +209,7 @@ main {
 
 /* Your original flex property is no longer needed: */
 /* flex: 1 1 400px; --- This is removed as it only applies to flexbox layouts. */
-@media (max-width: 767px) {
+@media (max-width: 1040px) {
   /* Nested Folders Container as Flex */
 .nested-folders {
   display: flex;
@@ -306,6 +307,7 @@ ul.file-list {
 }
 
 li.file-item {
+  max-width: 100%;
   margin: 10px 0;
   padding: 10px;
   background: rgba(255, 255, 255, 0.396);
