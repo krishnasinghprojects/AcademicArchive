@@ -12,7 +12,7 @@
   --folder-bg: #cecfcfa3;                         /* Dark blue for the folder icon itself, providing contrast */
   --folder-text: #333333;                       /* Soft dark grey for folder names, consistent with main text */
   --star-color: #FFD700;                        /* Gold for the star icon, making it pop without being garish */
-  --border-color: #e0e0e0;                      /* Light grey for subtle borders on containers/elements */
+  --border-color: #6b6b6bb7;                      /* Light grey for subtle borders on containers/elements */
   --transition-time: 0.5s;
   --reverse:0;
   --normal:1;
@@ -41,8 +41,9 @@
   --nav-bg: rgba(102, 102, 102, 0.8);      /* Semi-transparent accent (from accent-color) */
   --toggle-bg: rgba(102, 102, 102, 0.8);   /* Matching toggle background */
   --toggle-icon-color: #fff;             /* Light icons for contrast */
-  --folder-bg: #272727;                   /* Using button-bg shade for folder backgrounds */
-  --folder-text: #fff;                   /* White folder text */
+  --folder-bg: #27272793;                   /* Using button-bg shade for folder backgrounds */
+  --folder-text: #fff;   
+  --border-color: #d0d0d08f; 
   --transition-time: 0.3s;               /* Transition speed from the second theme */
   --reverse:1;
   --normal:0;
@@ -1101,4 +1102,51 @@ img:active {
   border: 0px solid !important;
   border-radius: 2px;
   animation: lineReveal 0.8s ease-out forwards;
+}
+.cardBox {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.card {
+  background-color: var(--folder-bg);
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+  text-align: center;
+  max-width: 300px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.card img {
+  width: 100%;
+  height: auto; /* Ensure height adjusts */
+  aspect-ratio: 16 / 9; /* Modern way to set aspect ratio */
+  object-fit: cover;
+  border-radius: 3px;
+  border: 1.5px solid var(--border-color);
+  margin-bottom: 10px;
+  background-color: var(--folder-bg);
+  filter: none !important;
+}
+
+.card-heading {
+  font-family: 'Noto Serif', 'Times New Roman', Times, serif;
+  font-size: 1rem;
+  font-style: normal;
+  color: var(--folder-text);
+  margin-top: 0px;
+  margin-bottom: 8px;
+}
+
+.card-title {
+  font-family: 'Noto Serif', 'Times New Roman', Times, serif;
+  text-align: justify;
+  font-size: 0.75rem;
+  color: var(--folder-text);
+  line-height: 1.5;
 }

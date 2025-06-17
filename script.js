@@ -440,6 +440,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
           const validItems = items.filter(item => {
             if (item.name === '.DS_Store') return false;
+            if(item.name ==='links.txt') return false;
             if (item.type === 'file') {
               const ext = item.name.split('.').pop().toLowerCase();
               return validExtensions.has(ext);
