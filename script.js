@@ -47,8 +47,65 @@ document.addEventListener('DOMContentLoaded', () => {
           searchActive = false;
         }
       });
-      
-      
+
+      function displayRecentFiles() {
+        const recentFilesContainer = document.getElementById('recentFilesContainer');
+        if (!recentFilesContainer) {
+          console.error("Error: 'recentFilesContainer' element not found.");
+          return;
+        }
+
+        // Clear any existing content in the container
+        recentFilesContainer.innerHTML = '';
+
+        try {
+          const recentFiles = JSON.parse(localStorage.getItem('recentFiles')) || [];
+
+          if (recentFiles.length === 0) {
+            recentFilesContainer.textContent = "No recent files to display.";
+            return;
+          }
+
+          recentFiles.forEach(file => {
+            const fileEntryDiv = document.createElement('li');
+            fileEntryDiv.classList.add('file-item');
+            fileEntryDiv.classList.add('recentFiles');
+            // No styling classes here, relying on external CSS
+
+            // Extract a simple file name from the rawUrl
+            const fileName = file.rawUrl.split('/').pop() || 'Unknown File';
+            const fileNameSpan = document.createElement('span');
+            fileNameSpan.textContent = fileName;
+            fileEntryDiv.appendChild(fileNameSpan);
+
+            const buttonContainer = document.createElement('div');
+            fileEntryDiv.appendChild(buttonContainer);
+
+            // View Button
+            const viewButton = document.createElement('button');
+            viewButton.textContent = 'View';
+            viewButton.onclick = () => handleFileView(file.rawUrl, file.fileType);
+            buttonContainer.appendChild(viewButton);
+
+            // Download Button
+            const downloadButton = document.createElement('button');
+            downloadButton.textContent = 'Download';
+            downloadButton.onclick = () => handleFileDownload(file.rawUrl, file.fileType);
+            buttonContainer.appendChild(downloadButton);
+
+
+            viewButton.classList.add('view-button');
+            downloadButton.classList.add('download-button');
+
+            recentFilesContainer.appendChild(fileEntryDiv);
+          });
+        } catch (e) {
+          console.error("Error displaying recent files:", e);
+          recentFilesContainer.textContent = "Error loading recent files.";
+        }
+      }
+      displayRecentFiles()
+
 
       // Close search when clicking outside
       document.addEventListener('click', (e) => {
@@ -160,6 +217,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // -------------------------------
       function handleModalClose(modal) {
         return function () {
+          displayRecentFiles()
           const modalContent = modal.querySelector('.modal-content');
           modalContent.classList.add('closing');
           setTimeout(() => {
@@ -323,23 +381,22 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       // -------------------------------
-      // Image Navigation
-      // -------------------------------
-
-
-      function navigateImages(direction) {
-        currentImageIndex = (currentImageIndex + direction + currentImageList.length) % currentImageList.length;
-        imageViewer.style.opacity = 0;
-        setTimeout(() => {
-          imageViewer.src = currentImageList[currentImageIndex];
-          imageViewer.style.opacity = 1;
-        }, 300);
-      }
-
-      // -------------------------------
       // Global File View and Download Handlers
       // -------------------------------
       function handleFileView(rawUrl, fileType) {
+        try {
+          let recentFiles = JSON.parse(localStorage.getItem('recentFiles')) || [];
+          const newFile = { rawUrl, fileType, viewedAt: new Date().toISOString() };
+
+          // Remove old entry if it exists to bring it to the front
+          recentFiles = recentFiles.filter(file => file.rawUrl !== rawUrl);
+          recentFiles.unshift(newFile); // Add to the beginning
+          recentFiles = recentFiles.slice(0, 20); // Keep only the 20 most recent files
+          localStorage.setItem('recentFiles', JSON.stringify(recentFiles));
+        } catch (e) {
+          console.error("Error saving to local storage:", e);
+        }
+
         if (fileType === 'pdf') {
           pdfViewer.src = `https://docs.google.com/gview?url=${encodeURIComponent(rawUrl)}&embedded=true`;
           pdfModal.style.display = "block";
@@ -438,9 +495,114 @@ document.addEventListener('DOMContentLoaded', () => {
           const response = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${folderPath}`);
           const items = await response.json();
 
+          const renderVideoCardsFromFile = async (fileUrl) => {
+            const getYouTubeThumbnail = (url) => {
+              let videoId = null;
+              try {
+                const urlObj = new URL(url);
+
+                // **PRIORITY 1: Standard YouTube URLs**
+                // Handles:
+                // - youtube.com?v=VIDEO_ID
+                // - youtube.com?si=...&v=VIDEO_ID
+                // - youtube.com/watch?v=VIDEO_ID
+                if (urlObj.hostname.includes('youtube.com')) {
+                  videoId = urlObj.searchParams.get('v');
+                }
+                // Handles:
+                // - youtu.be/VIDEO_ID (short URL)
+                else if (urlObj.hostname === 'youtu.be') {
+                  // Extracts VIDEO_ID from /VIDEO_ID
+                  videoId = urlObj.pathname.substring(1);
+                  if (videoId.includes('/')) { // If there are more slashes, take the first segment
+                    videoId = videoId.split('/')[0];
+                  }
+                }
+                // Handles:
+                // - https://www.youtube.com/watch?v=VIDEO_ID/embed/VIDEO_ID
+                // - https://www.youtube.com/watch?v=VIDEO_ID/v/VIDEO_ID
+                // - https://www.youtube.com/watch?v=VIDEO_ID/watch?v=VIDEO_ID
+                else if (urlObj.hostname === 'https://www.youtube.com/watch?v=VIDEO_ID' || urlObj.hostname.includes('youtube.com')) {
+                  // Try to get from 'v' parameter first
+                  videoId = urlObj.searchParams.get('v');
+
+                  if (!videoId) {
+                    // If not found, check path segments for common embed/v patterns
+                    const pathSegments = urlObj.pathname.split('/');
+                    const embedIndex = pathSegments.indexOf('embed');
+                    const vIndex = pathSegments.indexOf('v');
+
+                    if (embedIndex > -1 && embedIndex + 1 < pathSegments.length) {
+                      videoId = pathSegments[embedIndex + 1];
+                    } else if (vIndex > -1 && vIndex + 1 < pathSegments.length) {
+                      videoId = pathSegments[vIndex + 1];
+                    } else if (pathSegments.length > 1 && pathSegments[1].length === 11) { // Common for youtu.be/VIDEO_ID where VIDEO_ID is 11 chars
+                      videoId = pathSegments[1];
+                    }
+                  }
+                }
+                else if (urlObj.hostname.includes('googleusercontent.com')) {
+                  // Attempt to extract from 'v' parameter
+                  videoId = urlObj.searchParams.get('v');
+                  if (!videoId) {
+                    // Attempt to find 11-character string in pathname, common for video IDs
+                    const pathSegments = urlObj.pathname.split('/').filter(Boolean); // Filter Boolean removes empty strings
+                    for (const segment of pathSegments) {
+                      if (segment.length === 11 && /^[a-zA-Z0-9_-]{11}$/.test(segment)) { // Check for typical video ID characters
+                        videoId = segment;
+                        break;
+                      }
+                    }
+                  }
+                }
+
+              } catch (e) {
+                console.error("Error parsing URL for thumbnail:", url, e);
+              }
+
+              // Return the thumbnail URL or a placeholder if videoId is not found
+              return videoId ? `https://img.youtube.com/vi/${videoId}/sddefault.jpg` : 'https://placehold.co/480x270/2a2a2a/ffffff?text=Video+Not+Found';
+            };
+
+            try {
+              const response = await fetch(fileUrl);
+              if (!response.ok) return;
+
+              const csvData = await response.text();
+              const rows = csvData.trim().split('\n').filter(row => row);
+              if (rows.length === 0) return;
+
+              const cardBox = document.createElement('div');
+              cardBox.className = 'cardBox';
+
+              rows.forEach(row => {
+                const [videoUrl, title, description] = row.split(',').map(item => item.trim());
+                if (!videoUrl || !title || !description) return;
+
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                  <a href="${videoUrl}" target="_blank" rel="noopener noreferrer">
+                    <img src="${getYouTubeThumbnail(videoUrl)}" alt="${title}" onerror="this.onerror=null;this.src='https://placehold.co/480x270/ff0000/ffffff?text=Image+Failed';">
+                  </a>
+                  <h5 class="card-heading">${title}</h5>
+                  <p class="card-title">${description}</p>
+                `;
+                cardBox.appendChild(card);
+              });
+              parentElement.prepend(cardBox);
+            } catch (error) {
+              console.error("Error processing video links file:", error);
+            }
+          };
+
           const validItems = items.filter(item => {
             if (item.name === '.DS_Store') return false;
-            if(item.name ==='links.txt') return false;
+            if (item.name === 'links.txt') {
+              renderVideoCardsFromFile(item.download_url);
+              return false;
+            }
+
             if (item.type === 'file') {
               const ext = item.name.split('.').pop().toLowerCase();
               return validExtensions.has(ext);
@@ -865,4 +1027,53 @@ document.addEventListener('DOMContentLoaded', () => {
   folderContainer.classList.add('active');
   folderContainer.style.display = 'flex'; // Ensure initial display is correct
   aboutDiv.style.display = 'none'; // Ensure about is hidden initially
+});
+
+function clearRecentFiles() {
+  const recentFilesContainer = document.getElementById('recentFilesContainer');
+  if (!recentFilesContainer) {
+    console.error("Error: 'recentFilesContainer' element not found.");
+    return;
+  }
+
+  const fileItems = recentFilesContainer.querySelectorAll('.recentFiles');
+  if (fileItems.length === 0) {
+    console.log("No recent files to clear.");
+    return;
+  }
+
+  let itemsRemovedCount = 0;
+  const totalItems = fileItems.length;
+
+  fileItems.forEach((item, index) => {
+    // Add a class that triggers the CSS transition for swipe and fade-out
+    item.classList.add('removing-file');
+
+    // Add a slight delay for staggered animation, making it look nicer
+    item.style.transitionDelay = `${index * 0.25}s !important`;
+
+    // Listen for the end of the transition
+    item.addEventListener('transitionend', function handler() {
+      // Remove the element from the DOM after the transition
+      item.remove();
+      itemsRemovedCount++;
+
+      // Once all items have been removed, clear localStorage and update the container text
+      if (itemsRemovedCount === totalItems) {
+        localStorage.removeItem('recentFiles');
+        recentFilesContainer.textContent = "No recent files to display.";
+        console.log("Recent files cleared successfully.");
+      }
+      // Remove the event listener to prevent it from firing multiple times if re-added
+      item.removeEventListener('transitionend', handler);
+    });
+  });
+}
+
+// Attach the clearRecentFiles function to the clearRecent button
+document.addEventListener('DOMContentLoaded', () => {
+  const clearButton = document.getElementById('clearRecent');
+  if (clearButton) {
+    clearButton.onclick = clearRecentFiles;
+  }
 });

@@ -63,8 +63,11 @@
       </div>
   </nav>
   <main>
+    
     <!-- Container for dynamically generated folder sections -->
-    <div id="folderContainer"></div>
+    <div id="folderContainer">
+      <div class="loader"></div>
+    </div>
   </main>
 
   <div class="about main-content-section">
@@ -111,17 +114,10 @@
   </div>
 
   <hr class="break">
-  <div class="cardBox">
-    <div class="card">
-      <a href="https://www.youtube.com/">
-        <img src="https://i.ytimg.com/vi/P7uaVUdmcNQ/hq720.jpg?sqp=-oaymwEnCNAFEJQDSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLBZVzpM3tvYABBeKI-YPIE8ZFPpKg" alt="">
-      </a>
-      <h5 class="card-heading">Title of file</h5>
-      <p class="card-title">Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-        Vitae, natus praesentium? Architecto laborum cumque dolorum? Eligendi nostrum sed labore voluptates?</p>
-
-    </div>
-  </div>
+  <div class="recentFilesTitle">
+    <div class="titles"><img src="https://img.icons8.com/?size=100&id=x8m2R7zNGqYO&format=png&color=000000" alt="" id="recentFilesLogo"><h1>Recent Files</h1></div>
+    <button id="clearRecent"><img src="https://img.icons8.com/?size=100&id=99971&format=png&color=000000" alt=""></button></div>
+  <div id="recentFilesContainer"></div>
   <!-- Modal for PDF Viewer -->
   <div id="pdfModal" class="modal">
     <div class="modal-content">

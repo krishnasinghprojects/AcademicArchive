@@ -1093,7 +1093,7 @@ img:active {
 }
 
 .break {
-  width: 100%;
+  width: 90%;
   height: 2.5px; /* You can increase this height if you want the "ray" to be visually thicker overall */
   margin: 5px auto; /* Keeps it centered horizontally */
   
@@ -1105,6 +1105,7 @@ img:active {
 }
 .cardBox {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   align-items: center;
   padding: 20px;
@@ -1120,6 +1121,7 @@ img:active {
   max-width: 300px;
   width: 100%;
   box-sizing: border-box;
+  margin: 10px;
 }
 
 .card img {
@@ -1149,4 +1151,83 @@ img:active {
   font-size: 0.75rem;
   color: var(--folder-text);
   line-height: 1.5;
+}
+
+.loader {
+  width: 20vh;
+  --b: 20px; 
+  aspect-ratio: 1;
+  border-radius: 50%;
+  padding: 1px;
+  background: conic-gradient(#0000 10%,var(--text-color)) content-box;
+  mask:inherit;
+  -webkit-mask:
+    repeating-conic-gradient(#0000 0deg,#000 1deg 20deg,#0000 21deg 36deg),
+    radial-gradient(farthest-side,#0000 calc(100% - var(--b) - 1px),#000 calc(100% - var(--b)));
+  -webkit-mask-composite: destination-in;
+          mask-composite: intersect;
+  animation:l4 1s infinite steps(10);
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+@keyframes l4 {to{transform: rotate(1turn)}}
+#recentFilesContainer{
+  margin-bottom: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.recentFiles{
+  min-width: 80vw;
+  margin: 10px 0;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.396);
+  color: var(--text-color);
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.recentFilesTitle{
+  display: flex;
+  justify-content: space-between;
+  margin-left: 10vw;
+  margin-right: 10vw;
+  align-items: center;
+}
+.recentFilesTitle .titles{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  justify-content: flex-start;
+}
+.recentFilesTitle img{
+  width: 50px;
+  height: 50px;
+  margin-right: 10px;
+}
+.recentFiles {
+  transition: opacity 0.3s ease-out, transform 1s ease-out !important; /* Only animate opacity and transform now */
+
+}
+/* Styles for when a recent file item is being removed */
+.recentFiles.removing-file {
+  opacity: 0; /* Fade out */
+  transform: translateX(100%); /* Slide out to the right */
+  /* Removed height, margin, and padding transitions to keep the item's space until fully gone */
+}
+#clearRecent{
+  background-color: transparent;
+    border: none;
+    color: transparent;  
+    border-radius: 5px;
+}
+#clearRecent img{
+  padding: 5px;
+  width: 25px;
+  height: 25px;
 }
