@@ -3,14 +3,45 @@
 ===================================================== */
 :root {
   /* Light mode colors using blue tones */
-  --bg-color: hsl(210, 30%, 97%);             /* Very light, desaturated blue for a soft background */
+  --bg-color:radial-gradient(
+    circle at 20% 80%, /* Position of the first glow (bottom-left area) */
+    hsla(0, 0%, 67%, 0.75) 0%, /* More visible pure light sky blue glow */
+    hsla(0, 0%, 100%, 0.5) 30%,   /* Slightly more diffused pure light blue */
+    hsla(0, 0%, 100%, 0) 70% /* Fades to transparent pure white base */
+  ),
+  radial-gradient(
+    circle at 80% 20%, /* Position of the second glow (top-right area) */
+    hsla(0, 0%, 63%, 0.6) 0%, /* More visible pure lighter sky blue glow */
+    hsla(210, 100%, 95%, 0.35) 30%,   /* More diffused pure light blue */
+    hsla(0, 0%, 100%, 0) 70% /* Fades to transparent pure white base */
+  ),
+  radial-gradient(
+    circle at 50% 50%, /* A central, very subtle glow */
+    hsla(220, 100%, 90%, 0.4) 0%, /* More visible pure very light subtle blue glow */
+    hsla(0, 0%, 100%, 0) 60% /* Fades to transparent pure white base */
+  ),
+  #FFFFFF; /* Base pure white color */
+
+
+
   --primary-color: #ffffff;                     /* Pure white for main content areas (folders, nav bar) for crispness */
   --text-color: #333333;                        /* Soft dark grey for main text, easier on eyes than pure black */
-  --nav-bg: rgba(255, 255, 255, 0.95);             /* Slightly transparent pure white for a clean, airy navigation bar */
+  --nav-bg: rgba(255, 255, 255, 0.1);             /* Slightly transparent pure white for a clean, airy navigation bar */
   --toggle-bg: #f8fcfd;                         /* Very light, almost white blue for toggle backgrounds/hover states */
   --toggle-icon-color: #555555;                 /* Mid-grey for subtle yet visible icons */
-  --folder-bg: #cecfcfa3;                         /* Dark blue for the folder icon itself, providing contrast */
-  --folder-text: #333333;                       /* Soft dark grey for folder names, consistent with main text */
+  --folder-bg: linear-gradient(
+      to bottom right, /* Direction of the gradient */
+      hsla(200, 100%, 90%, 0.1) 0%, /* Very light sky blue, highly transparent */
+      hsla(0, 0%, 100%, 0) 50% /* Fades to transparent pure white in the middle */
+    ),
+    linear-gradient(
+      to top left, /* Another linear gradient for subtle depth */
+      hsla(210, 100%, 85%, 0.08) 0%, /* Slightly different light blue, more transparent */
+      hsla(0, 0%, 100%, 0) 50% /* Fades to transparent pure white */
+    ),
+    #cecfcfa3; /* Base folder background color, your original #cecfcfa3 */
+  --folder-text: #333333;  
+   --folder-text-light: #333333b3;                      /* Soft dark grey for folder names, consistent with main text */
   --star-color: #FFD700;                        /* Gold for the star icon, making it pop without being garish */
   --border-color: #6b6b6bb7;                      /* Light grey for subtle borders on containers/elements */
   --transition-time: 0.5s;
@@ -18,8 +49,8 @@
   --normal:1;
 
   /* Button theme variables for light mode */
-  --button-view-bg: #81818191;
-  --button-download-bg: #555555;/* A calm, slightly desaturated teal/cyan for secondary actions, cohesive with blue */
+  --button-view-bg: #8181814e;
+  --button-download-bg: #55555567;/* A calm, slightly desaturated teal/cyan for secondary actions, cohesive with blue */
   --button-text-color: #ffffff; /* White text for contrast on colored buttons */
 
   /* Textbox colors for light mode */
@@ -32,24 +63,56 @@
     rgba(0, 0, 0, 0.8) 50%,         /* Much darker/thicker in the center */
     rgba(0, 0, 0, 0.1) 75%,         /* Tapers off again */
     rgba(0, 0, 0, 0) 100%   );
+  --cursor:url('CursorLight.png'),auto;
 }
 [data-theme="dark"] {
   /* Dark mode using only the second theme’s shades */
-  --bg-color: #222;                      /* Dark background (from primary-bg) */
+  --bg-color: radial-gradient(
+      circle at 20% 80%, /* Position of the first glow (bottom-left area) */
+      rgba(50, 50, 50, 0.625) 0%, /* Increased opacity from 0.4 to 0.5 (40*1.25) */
+      rgba(30, 30, 30, 0.25) 30%,   /* Increased opacity from 0.2 to 0.25 (20*1.25) */
+      rgba(0, 0, 0, 0) 70%
+    ),
+    radial-gradient(
+      circle at 80% 20%, /* Position of the second glow (top-right area) */
+      rgba(60, 60, 60, 0.375) 0%, /* Increased opacity from 0.3 to 0.375 (30*1.25) */
+      rgba(40, 40, 40, 0.1875) 30%, /* Increased opacity from 0.15 to 0.1875 (15*1.25) */
+      rgba(0, 0, 0, 0) 70%
+    ),
+    radial-gradient(
+      circle at 50% 50%, /* A central, very subtle glow */
+      rgba(20, 20, 20, 0.125) 0%, /* Increased opacity from 0.1 to 0.125 (10*1.25) */
+      rgba(0, 0, 0, 0) 60%
+    ),
+    #111; /* Base very dark gray/near black color */
+
+
+
   --primary-color: #fff;                 /* Main text color */
   --text-color: #fff;                    /* Consistent with primary text */
-  --nav-bg: rgba(102, 102, 102, 0.8);      /* Semi-transparent accent (from accent-color) */
+  --nav-bg: rgba(102, 102, 102, 0.1);      /* Semi-transparent accent (from accent-color) */
   --toggle-bg: rgba(102, 102, 102, 0.8);   /* Matching toggle background */
   --toggle-icon-color: #fff;             /* Light icons for contrast */
-  --folder-bg: #27272793;                   /* Using button-bg shade for folder backgrounds */
+  --folder-bg: linear-gradient(
+      to bottom right, /* Direction of the gradient */
+      rgba(40, 40, 40, 0.15) 0%, /* Dark gray, highly transparent */
+      rgba(0, 0, 0, 0) 50% /* Fades to transparent black in the middle */
+    ),
+    linear-gradient(
+      to top left, /* Another linear gradient for subtle depth */
+      rgba(30, 30, 30, 0.1) 0%, /* Darker gray, more transparent */
+      rgba(0, 0, 0, 0) 50% /* Fades to transparent black */
+    ),
+    #27272793; /* Base folder background color, your original #27272793 */
   --folder-text: #fff;   
+  --folder-text-light: #ffffff97;   
   --border-color: #d0d0d08f; 
   --transition-time: 0.3s;               /* Transition speed from the second theme */
   --reverse:1;
   --normal:0;
    /* Button theme variables for light mode */
-   --button-view-bg: #fffffff1;
-   --button-download-bg: #d4d4d4d4;
+   --button-view-bg: #ffffff7e;
+   --button-download-bg: #d4d4d460;
    --button-text-color: #000000; /* White */
 
    --textbox-user: rgba(82, 82, 82, 0.9);   /* User textbox color (dark) */
@@ -61,12 +124,20 @@
   rgba(255, 255, 255, 0.8) 50%,   /* Much brighter/thicker in the center */
   rgba(255, 255, 255, 0.1) 75%,   /* Tapers off again */
   rgba(255, 255, 255, 0) 100%     /* Fully transparent at the very end */
+   
 );
-
-
+--cursor:url('CursorDark.png'),auto;
 }
 
+html, body { /* Target both html and body for full height */
+  min-height: 100%; /* Ensure both take up 100% of the viewport height */
+  margin: 0; /* Important to reset default browser margin */
+  padding: 0; /* Important to reset default browser padding */
+}
 /* Apply theme colors */
+*{
+  cursor:var(--cursor) !important;
+}
 body {
   font-family: 'Noto Serif', 'Times New Roman', Times, serif;
   margin: 0;
@@ -76,7 +147,8 @@ body {
   transition: background var(--transition-time) ease, color var(--transition-time) ease;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
-
+  min-height: 100%;
+  cursor:var(--cursor) !important;
 }
 
 /* =====================================================
@@ -121,7 +193,7 @@ body {
   border: 2px var(--text-color) solid;
   border-radius: 50%;
   background-color: var(--nav-bg);
-  cursor: pointer;
+
   transition: background var(--transition-time) ease;
   display: flex;
   align-items: center;
@@ -154,22 +226,31 @@ main {
   transition: all 0.75s ease;
 }
 
-/* Top-Level Folder Section */
 .folder-section {
   background: var(--folder-bg);
   color: var(--folder-text);
   padding: 15px;
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  border-radius: 12px;
   opacity: 0;
   transform: translateY(20px);
   animation: folderFadeIn 0.5s ease forwards;
-  transition: transform 0.5s ease, order 0.5s ease, box-shadow 0.3s ease;
+  transition: transform 0.5s ease, order 0.5s ease, box-shadow 0.3s ease, background 0.3s ease;
+
+  box-shadow:
+    0px 5px 18px rgba(0, 0, 0, 0.08),
+    0px 1px 4px rgba(0, 0, 0, 0.03),
+    inset 0px 0px 8px hsla(210, 100%, 95%, 0.15),
+    inset 0px 0px 8px hsla(0, 0%, 50%, 0.03);
 }
 
 /* Hover Effects for Top-Level Folder */
 .folder-section:hover {
-  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  transform: translateY(-3px);
+  box-shadow:
+    0px 8px 25px rgba(0, 0, 0, 0.12),
+    0px 2px 6px rgba(0, 0, 0, 0.05),
+    inset 0px 0px 10px hsla(210, 100%, 95%, 0.25),
+    inset 0px 0px 10px hsla(0, 0%, 50%, 0.05);
 }
 
 /* Folder Heading */
@@ -194,18 +275,33 @@ main {
 
 .nested-folder {
   min-width: fit-content;
-  break-inside: avoid; 
+  break-inside: avoid;
   background: var(--folder-bg);
   color: var(--folder-text);
   padding: 10px;
-  border: 1.5px solid #ddd;
+  border: none;
   border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-  margin-bottom: 20px; 
-  transition: all 0.5s ease;
+  margin-bottom: 20px;
+  transition: all 0.5s ease, box-shadow 0.3s ease, transform 0.2s ease;
   animation: folderFadeIn 0.5s ease forwards;
-  width: 100%; 
+  width: 100%;
   box-sizing: border-box;
+
+  /* Modern sleek look */
+  border-radius: 10px; /* Slightly more rounded than 8px for softness */
+  box-shadow:
+    0px 3px 10px rgba(0, 0, 0, 0.08),
+    0px 1px 3px rgba(0, 0, 0, 0.03),
+    inset 0px 0px 5px hsla(210, 100%, 95%, 0.1),
+    inset 0px 0px 5px hsla(0, 0%, 50%, 0.02);
+}
+.nested-folder:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0px 5px 15px rgba(0, 0, 0, 0.12),
+    0px 2px 5px rgba(0, 0, 0, 0.05),
+    inset 0px 0px 7px hsla(210, 100%, 95%, 0.2),
+    inset 0px 0px 7px hsla(0, 0%, 50%, 0.04);
 }
 
 /* Your original flex property is no longer needed: */
@@ -229,13 +325,6 @@ main {
   background: var(--folder-bg);
   color: var(--folder-text);
   padding: 10px;
-  border: 1.5px solid #ddd;
-  border-radius: 8px;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-  transition: transform 0.5s ease, order 0.5s ease, box-shadow 0.3s ease;
-  margin-bottom: 10px;
-  transition: all 0.5s ease;
-  animation: folderFadeIn 0.5s ease forwards;
 }
 }
 .nested-folder h4 {
@@ -275,6 +364,16 @@ main {
   transform: translateY(10px);
   opacity: 0.9;
 }
+.folder-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease, opacity 0.3s ease;
+  opacity: 0;
+}
+
+.folder-node.open .folder-content {
+  opacity: 1;
+}
 
 /* File list visibility */
 .file-list {
@@ -311,19 +410,29 @@ li.file-item {
   max-width: 100%;
   margin: 10px 0;
   padding: 10px;
-  background: rgba(255, 255, 255, 0.396);
+  background: var(--folder-bg);
   color: var(--text-color);
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  border: none;
+  border-radius: 5px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+
+  box-shadow:
+    0px 3px 10px rgba(0, 0, 0, 0.08),
+    0px 1px 3px rgba(0, 0, 0, 0.03),
+    inset 0px 0px 5px hsla(210, 100%, 95%, 0.1),
+    inset 0px 0px 5px hsla(0, 0%, 50%, 0.02);
 }
 
 li.file-item:hover {
   transform: translateY(-2px);
-  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  box-shadow:
+    0px 5px 15px rgba(0, 0, 0, 0.12),
+    0px 2px 5px rgba(0, 0, 0, 0.05),
+    inset 0px 0px 7px hsla(210, 100%, 95%, 0.2),
+    inset 0px 0px 7px hsla(0, 0%, 50%, 0.04);
 }
 
 li.file-item .file-title {
@@ -339,21 +448,60 @@ li.file-item button {
   padding: 6px 12px;
   border: none;
   border-radius: 4px;
-  cursor: pointer;
+
   transition: background var(--transition-time) ease;
 }
 
 /* Updated Button Styles Using Theme Variables */
 button.view-button {
   font-family: 'Noto Serif', 'Times New Roman', Times, serif;
-  background-color: var(--button-view-bg, #007acc);
-  color: var(--button-text-color, #fff);
+  background-color: var(--button-view-bg);
+  color: var(--text-color);
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95em;
+  transition: all 0.2s ease;
+
+  box-shadow:
+    0px 4px 12px rgba(0, 0, 0, 0.15),
+    0px 1px 2px rgba(0, 0, 0, 0.05),
+    inset 0px 0px 3px rgba(255, 255, 255, 0.2);
 }
 
+button.view-button:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0px 6px 16px rgba(0, 0, 0, 0.2),
+    0px 2px 4px rgba(0, 0, 0, 0.1),
+    inset 0px 0px 5px rgba(255, 255, 255, 0.3);
+}
 button.download-button {
   font-family: 'Noto Serif', 'Times New Roman', Times, serif;
-  background-color: var(--button-download-bg, #28a745);
-  color: var(--button-text-color, #fff);
+  background-color: var(--button-download-bg);
+  color: var(--text-color);
+  padding: 10px 20px;
+  border: 1.5px solid var(--button-download-border);
+  border-radius: 6px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95em;
+  transition: all 0.2s ease;
+
+  box-shadow:
+    0px 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+button.download-button:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    0px 3px 8px rgba(0, 0, 0, 0.12);
 }
 .share-notification {
   will-change: transform, opacity;
@@ -408,10 +556,16 @@ button.download-button {
   margin: 5% auto;
   max-width: 600px;
   width: 90%;
-  background: var(--bg-color); /* Uses theme background */
-  border-radius: 8px;
+  background: var(--bg-color);
+  border-radius: 16px;
   padding: 20px;
   animation: fadeInUp 0.2s ease forwards;
+  border: none;
+
+  box-shadow:
+    0px 10px 40px rgba(0, 0, 0, 0.2),
+    0px 5px 15px rgba(0, 0, 0, 0.1),
+    inset 0px 0px 10px hsla(210, 100%, 95%, 0.1);
 }
 
 /* Modal Header for title and close button */
@@ -440,7 +594,6 @@ button.download-button {
   transform: translateY(-50%);
   width: 40px;
   height: 40px;
-  cursor: pointer;
   /* Remove border/background so only image shows */
   border: none;
   background: transparent;
@@ -488,18 +641,28 @@ button.download-button {
   background: transparent;
   border: none;
   font-size: 30px;
-  cursor: pointer;
   z-index: 1010;
   filter: invert(var(--reverse));
+  background-image: url('https://img.icons8.com/?size=100&id=vu5kHwGC4PNb&format=png&color=000000'); /* Use your logo URL */
+  background-size: contain; /* Or cover, adjust as needed */
+  background-repeat: no-repeat;
+  background-position: center;
+  width: 20px;
+  height: 20px;
 }
 .pdf-container {
   position: relative;
   width: 100%;
   padding-bottom: calc(100% * (297 / 210));
   overflow: hidden;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  border-radius: 12px;
   margin-top: 20px;
+
+  box-shadow:
+    2px 2px 4px #b8b8b8, /* Top-left highlight */
+    -2px -2px 4px #b8b8b8, /* Bottom-right highlight */
+    2px -2px 4px #2c2c2c, /* Top-right shadow */
+    -2px 2px 4px #2c2c2c; /* Bottom-left shadow */
 }
 
 .pdf-container iframe {
@@ -550,7 +713,6 @@ button.download-button {
   border: none;
   font-size: 24px;
   padding: 10px;
-  cursor: pointer;
   border-radius: 30%;
   transition: all 0.2s;
   filter: grayscale(100);
@@ -629,9 +791,7 @@ img:active {
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
   background: transparent;
-  border: 2px solid var(--text-color);
   border-radius: 50%;
   transition: all var(--transition-time) ease;
   position: absolute;
@@ -695,10 +855,9 @@ img:active {
   justify-content: center;
   background: transparent;
   border: none;
-  cursor: pointer;
   transition: transform var(--transition-time) ease;
   margin-right: -5px;
-  border: solid var(--text-color);
+  border: 2px solid var(--text-color);
 }
 #searchButton:hover .search-icon {
   transform: scale(1.1);
@@ -716,7 +875,6 @@ img:active {
   padding: 15px;
   background: var(--item-bg);
   border-radius: 8px;
-  cursor: pointer;
   display: flex;
   align-items: center;
   gap: 15px;
@@ -810,7 +968,6 @@ img:active {
   right: 10px;
   border: none;
   background: transparent;
-  cursor: pointer;
   z-index: 1000;
   background-color: var(--folder-bg);
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
@@ -942,7 +1099,6 @@ img:active {
   font-size: 32px;
   font-weight: 700;
   color: var(--text-color);
-  cursor: pointer;
   user-select: none;
 }
 .invisible{
@@ -957,7 +1113,6 @@ img:active {
   margin-left: 0px;
   margin-right: 10px;
   background: none; /* Remove default button background */
-  cursor: pointer;
   display: flex; /* Use flexbox to center the image */
   justify-content: center;
   align-items: center; 
@@ -1006,7 +1161,6 @@ img:active {
   background: none;
   border: none;
   padding: 0;
-  cursor: pointer;
   width: 70px;
   height: auto;
   display: flex;
@@ -1113,24 +1267,38 @@ img:active {
 
 .card {
   background-color: var(--folder-bg);
-  border: 2px solid var(--border-color);
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border: none;
+  border-radius: 12px;
   padding: 24px;
   text-align: center;
   max-width: 300px;
   width: 100%;
   box-sizing: border-box;
   margin: 10px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+  box-shadow:
+    0px 5px 18px rgba(0, 0, 0, 0.08),
+    0px 1px 4px rgba(0, 0, 0, 0.03),
+    inset 0px 0px 8px hsla(210, 100%, 95%, 0.15),
+    inset 0px 0px 8px hsla(0, 0%, 50%, 0.03);
 }
 
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    0px 8px 25px rgba(0, 0, 0, 0.12),
+    0px 2px 6px rgba(0, 0, 0, 0.05),
+    inset 0px 0px 10px hsla(210, 100%, 95%, 0.25),
+    inset 0px 0px 10px hsla(0, 0%, 50%, 0.05);
+}
 .card img {
   width: 100%;
-  height: auto; /* Ensure height adjusts */
-  aspect-ratio: 16 / 9; /* Modern way to set aspect ratio */
+  height: auto;
+  aspect-ratio: 16 / 9;
   object-fit: cover;
-  border-radius: 3px;
-  border: 1.5px solid var(--border-color);
+  border-radius: 8px;
+  border: none;
   margin-bottom: 10px;
   background-color: var(--folder-bg);
   filter: none !important;
@@ -1149,7 +1317,7 @@ img:active {
   font-family: 'Noto Serif', 'Times New Roman', Times, serif;
   text-align: justify;
   font-size: 0.75rem;
-  color: var(--folder-text);
+  color: var(--folder-text-light);
   line-height: 1.5;
 }
 
@@ -1174,7 +1342,7 @@ img:active {
 }
 @keyframes l4 {to{transform: rotate(1turn)}}
 #recentFilesContainer{
-  margin-bottom: 40px;
+  margin-bottom: 100px;
   display: flex;
   flex-direction: column;
   align-items: center;

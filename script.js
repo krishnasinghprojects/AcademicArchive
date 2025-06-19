@@ -195,22 +195,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
 
-      function addShareButton(modal, getUrlCallback) {
-        const shareBtn = document.createElement('img');
-        shareBtn.src = 'https://img.icons8.com/?size=100&id=3447&format=png&color=000000';
-        Object.assign(shareBtn.style, {
-          position: 'absolute',
-          top: '10px',
-          left: '10px',
-          width: '16px',
-          height: '16px',
-          cursor: 'pointer',
-          zIndex: '2000',
-          filter: 'invert(var(--reverse))'
-        });
-        shareBtn.onclick = (e) => copyToClipboardWithNotification(getUrlCallback(), e);
-        modal.querySelector('.modal-content').appendChild(shareBtn);
-      }
 
       // -------------------------------
       // Restored Modal Transitions
