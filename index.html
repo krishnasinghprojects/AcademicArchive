@@ -62,7 +62,7 @@
       </div>
   </nav>
   <main>
-    
+
     <!-- Container for dynamically generated folder sections -->
     <div id="folderContainer">
       <div class="loader"></div>
@@ -114,11 +114,17 @@
 
   <hr class="break">
   <div class="recentFilesTitle">
-    <div class="titles"><img src="https://img.icons8.com/?size=100&id=x8m2R7zNGqYO&format=png&color=000000" alt="" id="recentFilesLogo"><h1>Recent Files</h1></div>
-    <button id="clearRecent"><img src="https://img.icons8.com/?size=100&id=99971&format=png&color=000000" alt=""></button></div>
+    <div class="titles"><img src="https://img.icons8.com/?size=100&id=x8m2R7zNGqYO&format=png&color=000000" alt=""
+        id="recentFilesLogo">
+      <h1>Recent Files</h1>
+    </div>
+    <button id="clearRecent"><img src="https://img.icons8.com/?size=100&id=99971&format=png&color=000000"
+        alt=""></button>
+  </div>
   <div id="recentFilesContainer"></div>
   <!-- Modal for PDF Viewer -->
   <div id="pdfModal" class="modal">
+    
     <div class="modal-content">
       <button class="close-button" id="closeModal"></button>
       <div class="pdf-container">
@@ -126,13 +132,23 @@
           Your browser does not support iframes.
         </iframe>
       </div>
+      
     </div>
+    <div id="recentModal">
+        <div class="recentFilesTitle recentTitle">
+          <div class="titles"><img src="https://img.icons8.com/?size=100&id=x8m2R7zNGqYO&format=png&color=000000" alt=""
+              id="recentFilesLogo">
+            <h1>Recent Files</h1>
+          </div>
+        </div>
+        <div id="recentFilesContainer2"></div>
+      </div>
   </div>
 
   <!-- Modal for Image Viewer -->
   <div id="imageModal" class="modal">
     <div class="modal-content image-modal-content">
-      <button class="close-button" id="closeImageModal">&times;</button>
+      <button class="close-button" id="closeImageModal"></button>
       <img id="imageViewer" src="" alt="Image Viewer">
     </div>
   </div>
@@ -140,7 +156,7 @@
   <!-- Code Modal -->
   <div id="codeModal" class="modal">
     <div class="modal-content code-modal-content">
-      <button class="close-button" id="closeCodeModal">&times;</button>
+      <button class="close-button" id="closeCodeModal"></button>
       <pre id="codeViewer"></pre>
     </div>
   </div>

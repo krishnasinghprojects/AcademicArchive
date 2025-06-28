@@ -555,6 +555,7 @@ button.download-button:hover {
   position: relative;
   margin: 5% auto;
   max-width: 600px;
+  min-width: 600px;
   width: 90%;
   background: var(--bg-color);
   border-radius: 16px;
@@ -1348,9 +1349,16 @@ img:active {
   align-items: center;
   justify-content: center;
 }
+#recentFilesContainer2{
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
 .recentFiles{
-  min-width: 80vw;
-  margin: 10px 0;
+  width: 90%;
+  margin: 20px 0;
   padding: 10px;
   background: rgba(255, 255, 255, 0.396);
   color: var(--text-color);
@@ -1398,4 +1406,50 @@ img:active {
   padding: 5px;
   width: 25px;
   height: 25px;
+}
+#pdfModal{
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+#recentModal{
+    position: relative;
+    margin: 5% auto;
+    max-width: 600px;
+    min-width: 600px;
+    width: 90%;
+    background: rgba(0, 0, 0, 0) !important;
+    border-radius: 16px;
+    animation: fadeInUp 0.2s ease forwards;
+    border: none;
+    box-shadow: 0px 10px 40px rgba(0, 0, 0, 0.2), 0px 5px 15px rgba(0, 0, 0, 0.1), inset 0px 0px 10px hsla(210, 100%, 95%, 0.1);
+}
+.recentTitle{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+}
+@media screen and (max-width: 1300px){
+  #pdfModal{
+  flex-direction: column;
+  min-width: 0;
+  overflow-y: auto;
+}
+.modal-content{
+  min-width: 0;
+
+   width: 80%;
+
+  margin-top: 600px;
+}
+#recentModal{
+  min-width: 0;
+  margin-bottom: 40px;
+}
+
+}
+
+body.modal-open {
+    overflow: hidden;
 }

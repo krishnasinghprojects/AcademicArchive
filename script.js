@@ -50,6 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       function displayRecentFiles() {
         const recentFilesContainer = document.getElementById('recentFilesContainer');
+        const recentFilesContainer2 = document.getElementById('recentFilesContainer2');
         if (!recentFilesContainer) {
           console.error("Error: 'recentFilesContainer' element not found.");
           return;
@@ -63,6 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
           if (recentFiles.length === 0) {
             recentFilesContainer.textContent = "No recent files to display.";
+            recentFilesContainer2.innerHTML = "No recent files to display.";
             return;
           }
 
@@ -98,6 +100,48 @@ document.addEventListener('DOMContentLoaded', () => {
             downloadButton.classList.add('download-button');
 
             recentFilesContainer.appendChild(fileEntryDiv);
+            
+          });
+
+
+           // Clear any existing content in the container
+        recentFilesContainer2.innerHTML = '';
+
+
+
+          recentFiles.forEach(file => {
+            const fileEntryDiv = document.createElement('li');
+            fileEntryDiv.classList.add('file-item');
+            fileEntryDiv.classList.add('recentFiles');
+            // No styling classes here, relying on external CSS
+
+            // Extract a simple file name from the rawUrl
+            const fileName = file.rawUrl.split('/').pop() || 'Unknown File';
+            const fileNameSpan = document.createElement('span');
+            fileNameSpan.textContent = fileName;
+            fileEntryDiv.appendChild(fileNameSpan);
+
+            const buttonContainer = document.createElement('div');
+            fileEntryDiv.appendChild(buttonContainer);
+
+            // View Button
+            const viewButton = document.createElement('button');
+            viewButton.textContent = 'View';
+            viewButton.onclick = () => handleFileView(file.rawUrl, file.fileType);
+            buttonContainer.appendChild(viewButton);
+
+            // Download Button
+            const downloadButton = document.createElement('button');
+            downloadButton.textContent = 'Download';
+            downloadButton.onclick = () => handleFileDownload(file.rawUrl, file.fileType);
+            buttonContainer.appendChild(downloadButton);
+
+
+            viewButton.classList.add('view-button');
+            downloadButton.classList.add('download-button');
+
+            recentFilesContainer2.appendChild(fileEntryDiv);
+            
           });
         } catch (e) {
           console.error("Error displaying recent files:", e);
@@ -204,6 +248,7 @@ document.addEventListener('DOMContentLoaded', () => {
           displayRecentFiles()
           const modalContent = modal.querySelector('.modal-content');
           modalContent.classList.add('closing');
+          document.body.classList.remove('modal-open');
           setTimeout(() => {
             modal.style.display = "none";
             modalContent.classList.remove('closing');
@@ -383,7 +428,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (fileType === 'pdf') {
           pdfViewer.src = `https://docs.google.com/gview?url=${encodeURIComponent(rawUrl)}&embedded=true`;
-          pdfModal.style.display = "block";
+          pdfModal.style.display = "flex";
+           document.body.classList.add('modal-open'); 
         } else if (fileType === 'code') {
           fetch(rawUrl)
             .then(response => response.text())
@@ -1015,12 +1061,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function clearRecentFiles() {
   const recentFilesContainer = document.getElementById('recentFilesContainer');
+  const recentFilesContainer2 = document.getElementById('recentFilesContainer2');
   if (!recentFilesContainer) {
     console.error("Error: 'recentFilesContainer' element not found.");
     return;
   }
 
   const fileItems = recentFilesContainer.querySelectorAll('.recentFiles');
+   const fileItems2 = recentFilesContainer2.querySelectorAll('.recentFiles');
   if (fileItems.length === 0) {
     console.log("No recent files to clear.");
     return;
@@ -1030,6 +1078,29 @@ function clearRecentFiles() {
   const totalItems = fileItems.length;
 
   fileItems.forEach((item, index) => {
+    // Add a class that triggers the CSS transition for swipe and fade-out
+    item.classList.add('removing-file');
+
+    // Add a slight delay for staggered animation, making it look nicer
+    item.style.transitionDelay = `${index * 0.25}s !important`;
+
+    // Listen for the end of the transition
+    item.addEventListener('transitionend', function handler() {
+      // Remove the element from the DOM after the transition
+      item.remove();
+      itemsRemovedCount++;
+
+      // Once all items have been removed, clear localStorage and update the container text
+      if (itemsRemovedCount === totalItems) {
+        localStorage.removeItem('recentFiles');
+        recentFilesContainer.textContent = "No recent files to display.";
+        console.log("Recent files cleared successfully.");
+      }
+      // Remove the event listener to prevent it from firing multiple times if re-added
+      item.removeEventListener('transitionend', handler);
+    });
+  });
+  fileItems2.forEach((item, index) => {
     // Add a class that triggers the CSS transition for swipe and fade-out
     item.classList.add('removing-file');
 
