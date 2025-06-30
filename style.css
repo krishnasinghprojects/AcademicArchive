@@ -736,7 +736,6 @@ button.download-button:hover {
 }
 /* Footer Styles */
 #main-footer {
-    width: 100%;
     background: var(--nav-bg);
     border-top: var(--border-color) 1px solid;
     color: var(--folder-text);
@@ -758,7 +757,7 @@ button.download-button:hover {
     width: 100%;
     padding: 0 40px;
     margin-bottom: 30px;
-    text-align: left;
+    text-align: justify;
 }
 
 .footer-section {
@@ -837,6 +836,7 @@ button.download-button:hover {
 }
 
 .footer-bottom {
+  border-top: solid 1px var(--border-color);
     width: 100%;
     max-width: 1200px;
     padding-top: 20px;
@@ -861,7 +861,10 @@ button.download-button:hover {
         min-width: unset;
         width: 100%;
     }
-
+    .footer-about{
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border-color);
+    }
     .footer-section h3 {
         text-align: center;
     }
