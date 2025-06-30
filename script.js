@@ -284,30 +284,40 @@ document.addEventListener('DOMContentLoaded', () => {
       // -------------------------------
       // Animated Folder Management
       // -------------------------------
-      function handleFolderClick(event, folderElement) {
+function handleFolderClick(event, folderElement) {
+    const clickedElement = event.target;
+
+    if (clickedElement.closest('.view-button') ||
+        clickedElement.closest('.download-button') ||
+        clickedElement.closest('.file-title')) {
         event.stopPropagation();
-        const wasActive = folderElement.classList.contains('active');
-        const parentContainer = folderElement.parentElement;
+        return;
+    }
 
-        // Add animation classes
-        folderElement.classList.add(wasActive ? 'collapsing' : 'expanding');
+    event.stopPropagation();
 
-        // Collapse siblings
-        if (!wasActive) {
-          Array.from(parentContainer.children).forEach(child => {
+    const wasActive = folderElement.classList.contains('active');
+    const parentContainer = folderElement.parentElement;
+
+    folderElement.classList.remove('collapsing', 'expanding');
+
+    if (!wasActive) {
+        Array.from(parentContainer.children).forEach(child => {
             if (child !== folderElement && child.classList.contains('folder-node')) {
-              child.classList.add('collapsing');
-              child.classList.remove('active', 'expanding');
+                if (child.classList.contains('active')) {
+                    child.classList.remove('active');
+                }
             }
-          });
-        }
+        });
 
-        // Toggle active state after animation
-        setTimeout(() => {
-          folderElement.classList.toggle('active', !wasActive);
-          folderElement.classList.remove(wasActive ? 'collapsing' : 'expanding');
-        }, 10);
-      }
+        folderElement.classList.remove('active');
+        void folderElement.offsetWidth;
+        folderElement.classList.add('active');
+
+    } else {
+        folderElement.classList.remove('active');
+    }
+}
 
       function createFolderElement(isNested = false) {
         const element = document.createElement(isNested ? 'div' : 'section');
@@ -429,6 +439,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (fileType === 'pdf') {
           pdfViewer.src = `https://docs.google.com/gview?url=${encodeURIComponent(rawUrl)}&embedded=true`;
           pdfModal.style.display = "flex";
+          displayRecentFiles()
            document.body.classList.add('modal-open'); 
         } else if (fileType === 'code') {
           fetch(rawUrl)
@@ -502,7 +513,7 @@ document.addEventListener('DOMContentLoaded', () => {
             folderNameWrapper.appendChild(document.createTextNode(folder.name));
 
             heading.appendChild(folderNameWrapper);
-            folderNameWrapper.onclick = (e) => handleFolderClick(e, section);
+            section.onclick = (e) => handleFolderClick(e, section);
 
             headingContainer.appendChild(heading);
             headingContainer.appendChild(createPinButton(folder.name, section));
@@ -837,53 +848,71 @@ document.addEventListener('DOMContentLoaded', () => {
         // Update when new content loads
         document.addEventListener('folderContentLoaded', updateFileElements);
 
-        function performSearch() {
-          const searchTerm = searchInput.value.trim().toLowerCase();
+function performSearch() {
+  const searchTerm = searchInput.value.trim().toLowerCase();
 
-          if (!searchTerm) {
-            folderContainer.style.display = 'flex';
-            searchResults.style.display = 'none';
-            allFileElements.forEach(file => {
-              file.style.display = '';
-              file.closest('.folder-section').style.display = 'block';
-            });
-            return;
-          }
+  if (!searchTerm) {
+    // If search term is empty, show original structure and hide results
+    folderContainer.style.display = 'flex';
+    searchResults.style.display = 'none';
 
-          // Hide original structure
-          folderContainer.style.display = 'none';
+    // Ensure all original files and their folder sections are visible
+    allFileElements.forEach(file => {
+      file.style.display = ''; // Reset display for the file itself
+      const folderSection = file.closest('.folder-section');
+      if (folderSection) { // Check if .folder-section ancestor exists
+        folderSection.style.display = 'block'; // Ensure its parent folder is visible
+      }
+    });
+    return;
+  }
 
-          // Show search results container
-          searchResults.style.display = 'block';
-          searchResults.innerHTML = '<h2>Search Results :</h2>';
+  // Hide original structure when search term is present
+  folderContainer.style.display = 'none';
 
-          // Find matches
-          const matches = allFileElements.filter(file => {
-            const fileName = file.querySelector('.file-title').textContent.toLowerCase();
-            return fileName.includes(searchTerm);
-          });
+  // Show search results container and clear previous results
+  searchResults.style.display = 'block';
+  searchResults.innerHTML = '<h2>Search Results :</h2>';
 
-          console.log('Found matches:', matches.length);
-          if (matches.length === 0) {
-            searchResults.innerHTML = '<h2>No matching files were found.</h2>';
+  // Find matches
+  const matches = allFileElements.filter(file => {
+    const fileTitleElement = file.querySelector('.file-title');
+    if (fileTitleElement) { // Check if .file-title element exists
+      const fileName = fileTitleElement.textContent.toLowerCase();
+      return fileName.includes(searchTerm);
+    }
+    return false; // If .file-title is not found, it's not a match
+  });
 
-          }
-          // Display matches
-          matches.forEach(originalFile => {
-            const clone = originalFile.cloneNode(true);
+  console.log('Found matches:', matches.length);
 
-            // Reattach click handlers using global handlers
-            const newViewBtn = clone.querySelector('.view-button');
-            const newDownloadBtn = clone.querySelector('.download-button');
-            const rawUrl = originalFile.dataset.rawUrl;
-            const fileType = originalFile.dataset.fileType;
+  if (matches.length === 0) {
+    searchResults.innerHTML = '<h2>No matching files were found.</h2>';
+  } else {
+    // Display matches
+    matches.forEach(originalFile => {
+      const clone = originalFile.cloneNode(true); // Clone the file element
 
-            newViewBtn.onclick = () => handleFileView(rawUrl, fileType);
-            newDownloadBtn.onclick = () => handleFileDownload(rawUrl, fileType);
+      // Reattach event handlers for the cloned elements
+      // Assuming handleFileView and handleFileDownload are globally accessible functions
+      const newViewBtn = clone.querySelector('.view-button');
+      const newDownloadBtn = clone.querySelector('.download-button');
 
-            searchResults.appendChild(clone);
-          });
-        }
+      // Get original data attributes from the original element
+      const rawUrl = originalFile.dataset.rawUrl;
+      const fileType = originalFile.dataset.fileType;
+
+      if (newViewBtn) {
+        newViewBtn.onclick = () => handleFileView(rawUrl, fileType);
+      }
+      if (newDownloadBtn) {
+        newDownloadBtn.onclick = () => handleFileDownload(rawUrl, fileType);
+      }
+
+      searchResults.appendChild(clone);
+    });
+  }
+}
 
         searchButton.addEventListener('click', performSearch);
         searchInput.addEventListener('input', performSearch);

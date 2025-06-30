@@ -68,7 +68,6 @@
       <div class="loader"></div>
     </div>
   </main>
-
   <div class="about main-content-section">
     <div class="text">
       <h2>About Academic Archive</h2>
@@ -76,11 +75,11 @@
         from GitHub repositories, ensuring your notes, syllabi, and code are always current. This open-source project
         focuses on easy access and community contributions, allowing anyone to review code or collaborate on content.
       </p>
-      <hr>
+      <hr class="break">
       <h3>Developer</h3>
       <p>Academic Archive was developed by <strong>Krishna Singh</strong>, a first-year student at BBD University. This
         project highlights a dedication to building practical tools in educational technology.</p>
-      <hr>
+      <hr class="break">
       <h3>Key Features</h3>
       <ul>
         <li><strong>Multi-Repository Folder Rendering:</strong> The platform now supports rendering content from
@@ -94,7 +93,7 @@
         <li><strong>Enhanced Viewing:</strong> View PDFs, images, and code snippets smoothly with integrated modals.
         </li>
       </ul>
-      <hr>
+      <hr class="break">
       <h3>Additional Features & Enhancements</h3>
       <ul>
         <li><strong>Customizable Interface:</strong> Toggle between dark/light mode and use a <strong>pin
@@ -102,8 +101,6 @@
             folders</strong> lets you filter your view to see only pinned items, enhancing focus and privacy.</li>
         <li><strong>Dynamic Folder Management:</strong> Main folders have a dropdown toggle to keep the interface clean,
           and folders auto-collapse for better organization.</li>
-        <li><strong>Seamless Sharing:</strong> Each file modal includes a <strong>share button</strong> for easy
-          resource distribution.</li>
         <li><strong>Flexible Repository Management:</strong> Repository details are stored in a JSON file, allowing
           non-technical users to easily update repository names or owners.</li>
         <li><strong>Collaborative Model:</strong> The open-source nature encourages code review and contributions, while
@@ -124,7 +121,8 @@
   <div id="recentFilesContainer"></div>
   <!-- Modal for PDF Viewer -->
   <div id="pdfModal" class="modal">
-    
+
+
     <div class="modal-content pdfff">
       <button class="close-button" id="closeModal"></button>
       <div class="pdf-container">
@@ -132,17 +130,17 @@
           Your browser does not support iframes.
         </iframe>
       </div>
-      
+
     </div>
     <div id="recentModal">
-        <div class="recentFilesTitle recentTitle">
-          <div class="titles"><img src="https://img.icons8.com/?size=100&id=x8m2R7zNGqYO&format=png&color=000000" alt=""
-              id="recentFilesLogo">
-            <h1>Recent Files</h1>
-          </div>
+      <div class="recentFilesTitle recentTitle">
+        <div class="titles"><img src="https://img.icons8.com/?size=100&id=x8m2R7zNGqYO&format=png&color=000000" alt=""
+            id="recentFilesLogo">
+          <h1>Recent Files</h1>
         </div>
-        <div id="recentFilesContainer2"></div>
       </div>
+      <div id="recentFilesContainer2"></div>
+    </div>
   </div>
 
   <!-- Modal for Image Viewer -->
@@ -178,9 +176,55 @@
     </div>
   </div>
 
-  <footer id="footer">
-    <h5> &#169; The Academic Archive | Krishna Singh | All Rights Reserved</h5>
+  <footer id="main-footer">
+    <div class="footer-container">
+      <div class="footer-section footer-about">
+        <h3>About Academic Archive</h3>
+        <p>Academic Archive is a web platform designed to streamline the management and access of academic materials,
+          pulling content directly from GitHub for up-to-date resources. Our mission is to provide an accessible and
+          collaborative environment for students and educators.</p>
+      </div>
+
+      <div class="footer-section footer-contact">
+        <h3>Contact & Connect</h3>
+        <p>Developer: Krishna Singh</p>
+        <p>Email: <a href="mailto:krishnasinghprojects@gmail.com">krishnasinghprojects@gmail.com</a></p>
+        <p>GitHub: <a href="https://github.com/krishnasinghprojects" target="_blank"
+            rel="noopener noreferrer">Github.com/krishnasinghprojects</a></p>
+        <div class="social-links">
+          <a href="https://www.linkedin.com/in/krishnasinghprojects" aria-label="LinkedIn Profile" class="social-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+              <path
+                d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
+            </svg>
+          </a>
+          <a href="https://www.instagram.com/krishnasinghprojects" aria-label="Instagram Profile" class="social-icon"
+            target="_blank" rel="noopener noreferrer">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+              <path
+                d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.148 3.228-1.668 4.747-4.919 4.919-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-3.252-.148-4.771-1.691-4.919-4.919-.058-1.265-.07-1.646-.07-4.85s.012-3.584.07-4.85c.148-3.227 1.668-4.746 4.919-4.918 1.265-.058 1.646-.07 4.85-.07zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.073 4.948.073s3.668-.014 4.948-.072c4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.689-.073-4.948-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.162 6.162 6.162 6.162-2.759 6.162-6.162-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4s1.791-4 4-4 4 1.79 4 4-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+            </svg>
+          </a>
+
+          <a href="https://github.com/krishnasinghprojects" aria-label="GitHub Profile" class="social-icon"
+            target="_blank" rel="noopener noreferrer">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+              <path
+                d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.08-.731.084-.716.084-.716 1.192.085 1.815 1.229 1.815 1.229 1.065 1.815 2.801 1.292 3.492.981.108-.763.417-1.292.76-1.593-2.665-.304-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.046.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.873.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.797.576c4.765-1.589 8.192-6.088 8.192-11.386 0-6.627-5.373-12-12-12z" />
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+    <hr class="break">
+    <div class="footer-bottom">
+      <p>&copy; <span id="current-year"></span> The Academic Archive. All rights reserved.</p>
+    </div>
   </footer>
+
+  <script>
+    document.getElementById('current-year').textContent = new Date().getFullYear();
+  </script>
 
   <script src="script.js"></script>
 </body>

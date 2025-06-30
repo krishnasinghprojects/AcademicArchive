@@ -554,8 +554,7 @@ button.download-button:hover {
 .modal-content {
   position: relative;
   margin: 5% auto;
-  max-width: 600px;
-  min-width: 600px;
+  max-width: 500px;
   width: 90%;
   background: var(--bg-color);
   border-radius: 16px;
@@ -734,19 +733,141 @@ button.download-button:hover {
   width: 40px;
   height: 40px;
 }
-#footer {
-  display: flex;
-  align-items: center;
-  text-align: center;
-  justify-content: center;
-  position: fixed;
-  bottom: 0;
-  height: 40px;
-  width: 100%;
-  text-align: center;
-  background: var(--nav-bg);
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-  transition: background var(--transition-time) ease;
+/* Footer Styles */
+#main-footer {
+    width: 100%;
+    background: var(--nav-bg);
+    border-top: var(--border-color) 1px solid;
+    color: var(--folder-text);
+    padding: 40px 20px 20px;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    transition: background var(--transition-time) ease, color var(--transition-time) ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.footer-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 50px;
+    max-width: 1200px;
+    width: 100%;
+    padding: 0 40px;
+    margin-bottom: 30px;
+    text-align: left;
+}
+
+.footer-section {
+    flex: 1;
+    min-width: 300px;
+}
+
+.footer-section h3 {
+    font-size: 1.2em;
+    margin-bottom: 15px;
+    color: var(--text-color);
+    padding-bottom: 7.5px;
+}
+
+.footer-section p {
+    font-size: 1.0em;
+    line-height: 1.6;
+    color: var(--folder-text-light);
+    margin-bottom: 10px;
+}
+
+.footer-section p.break {
+    margin-bottom: 5px;
+}
+
+.footer-section p a {
+    color: var(--folder-text-light); /* This should now correctly apply the color */
+    text-decoration: none;
+    transition: color 0.3s ease;
+    /* IMPORTANT FIXES BELOW */
+    background: none; /* Ensure no background gradient covers the text */
+    -webkit-background-clip: unset; /* Remove text clipping */
+    -webkit-text-fill-color: unset; /* Ensure text color is not overridden by fill color */
+}
+
+/* Colorless hover for text links */
+:root .footer-section p a:hover {
+    color: #000000;
+    text-decoration: underline;
+}
+
+[data-theme="dark"] .footer-section p a:hover {
+    color: #FFFFFF;
+    text-decoration: underline;
+}
+
+.social-links {
+    margin-top: 20px;
+    display: flex;
+    gap: 20px;
+}
+
+.social-links .social-icon {
+    color: var(--folder-text-light);
+    transition: color 0.3s ease;
+    display: flex;
+    /* Ensure no gradient interference for SVG icons either */
+    background: none;
+    -webkit-background-clip: unset;
+    -webkit-text-fill-color: unset;
+}
+
+/* Darker/Lighter hover for social icons/logos */
+:root .social-links .social-icon:hover {
+    color: #333333;
+}
+
+[data-theme="dark"] .social-links .social-icon:hover {
+    color: #E0E0E0;
+}
+
+.social-links svg {
+    width: 24px;
+    height: 24px;
+    vertical-align: middle;
+}
+
+.footer-bottom {
+    width: 100%;
+    max-width: 1200px;
+    padding-top: 20px;
+    text-align: center;
+    font-size: 0.85em;
+    color: var(--folder-text-light);
+}
+.footer-bottom p{
+  font-size: 1.25em;
+}
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .footer-container {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 20px;
+        padding: 0 20px;
+    }
+
+    .footer-section {
+        min-width: unset;
+        width: 100%;
+    }
+
+    .footer-section h3 {
+        text-align: center;
+    }
+
+    .social-links {
+        justify-content: center;
+    }
 }
 h5{
   font-weight: 400;
@@ -1179,11 +1300,10 @@ img:active {
   opacity: 0;
   transition: opacity 0.3s ease-in-out;
   pointer-events: none; /* Prevents interaction when transparent/hidden */
-  width: 100%; /* Or set to auto, depending on your layout */
   min-height: 100px;
   box-sizing: border-box;
   padding: 20px;
-  background-color: var(--background-color);
+  margin: 25px 50px;
   color: var(--text-color);
   overflow-y: auto; /* Enable scrolling for content if needed */
 }
@@ -1236,10 +1356,11 @@ img:active {
   margin-bottom: 10px; /* Adds space between list items */
 }
 .text{
-  background: var(--folder-bg);
+  background: var(--bg-color);
   color: var(--folder-text);
-  padding: 15px;
+  padding: 25px;
   border-radius: 8px;
+  border: 1px solid var(--border-color);
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
   opacity: 0;
   transform: translateY(20px);
@@ -1350,7 +1471,7 @@ img:active {
   justify-content: center;
 }
 #recentFilesContainer2{
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1433,24 +1554,99 @@ img:active {
 @media screen and (max-width: 1300px){
   #pdfModal{
   flex-direction: column;
+   align-items: flex-start;
+   justify-content: flex-start;
+     gap: 20px;
   min-width: 0;
   overflow-y: auto;
 }
-.pdfff{
-  min-width: 0;
 
-   width: 80%;
-  flex: 2;
-  margin-top: 350px;
-}
 #recentModal{
   min-width: 0;
   flex: 1;
-  margin-bottom: 40px;
 }
 
 }
 
 body.modal-open {
     overflow: hidden;
+}
+
+/* Scrollbar Customization */
+::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+}
+
+::-webkit-scrollbar-track {
+    background-color: var(--bg-color);
+    border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb {
+    border-radius: 2px;
+    border: 0.5px solid var(--border-color);
+    cursor: var(--cursor);
+}
+
+:root {
+    ::-webkit-scrollbar-thumb {
+        background: linear-gradient(
+            180deg, /* Top to bottom */
+            hsla(0, 0%, 100%, 0.8), /* White, matching light theme's base */
+            hsla(0, 0%, 50%, 0.6) /* Mid-grey, darker but still subtle for light mode */
+        );
+        box-shadow: 0 0 6px rgba(0, 0, 0, 0.15);
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(
+            180deg,
+            hsla(0, 0%, 95%, 0.9),
+            hsla(0, 0%, 40%, 0.7)
+        );
+    }
+
+    ::-webkit-scrollbar-thumb:active {
+        background: linear-gradient(
+            180deg,
+            hsla(0, 0%, 90%, 1),
+            hsla(0, 0%, 30%, 0.8)
+        );
+    }
+}
+
+[data-theme="dark"] {
+    ::-webkit-scrollbar-thumb {
+        background: linear-gradient(
+            180deg, /* Top to bottom */
+            hsla(0, 0%, 10%, 0.8), /* Dark grey/near black, matching dark theme's base */
+            hsla(0, 0%, 70%, 0.6) /* Lighter grey, subtle for dark mode */
+        );
+        box-shadow: 0 0 6px rgba(255, 255, 255, 0.08);
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(
+            180deg,
+            hsla(0, 0%, 15%, 0.9),
+            hsla(0, 0%, 80%, 0.7)
+        );
+    }
+
+    ::-webkit-scrollbar-thumb:active {
+        background: linear-gradient(
+            180deg,
+            hsla(0, 0%, 20%, 1),
+            hsla(0, 0%, 90%, 0.8)
+        );
+    }
+}
+
+::-webkit-scrollbar-corner {
+    background-color: var(--bg-color);
+}
+
+::-webkit-resizer {
+    background-color: var(--folder-bg);
 }
