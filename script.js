@@ -467,260 +467,188 @@ function handleFolderClick(event, folderElement) {
       // Main Fetch Functions
       // -------------------------------
 
-      async function fetchFolders() {
+// New function to fetch the entire repository tree at once
+async function fetchRepositoryTree() {
+  const repoOwner = repoConfigs[0].owner;
+  const repoName = repoConfigs[0].name;
+  const folderContainer = document.getElementById('folderContainer');
+  folderContainer.innerHTML = '';
 
+  try {
+    // 1. Get the SHA for the main branch tree
+    const branchUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/branches/main`;
+    const branchResponse = await fetch(branchUrl);
+    const branchData = await branchResponse.json();
+    const treeSha = branchData.commit.commit.tree.sha;
 
-        try {
-          const fetchPromises = repoConfigs.map(repo =>
-            fetch(`https://api.github.com/repos/${repo.owner}/${repo.name}/contents/`)
-              .then(response => response.json())
-              .then(data => data.map(item => ({
-                ...item,
-                repoOwner: repo.owner,
-                repoName: repo.name
-              })))
-          );
+    // 2. Fetch the entire repository tree recursively
+    const treeUrl = `https://api.github.com/repos/${repoOwner}/${repoName}/git/trees/${treeSha}?recursive=1`;
+    const treeResponse = await fetch(treeUrl);
+    const treeData = await treeResponse.json();
 
-          const allItemsArrays = await Promise.all(fetchPromises);
-          const items = allItemsArrays.flat();
+    // 3. Sort by path to ensure parents are created before children
+    treeData.tree.sort((a, b) => a.path.localeCompare(b.path));
 
-          const folderContainer = document.getElementById('folderContainer');
-          folderContainer.innerHTML = '';
+    // This map will store the reference to each folder's content container div
+    const folderElementMap = {
+      '': folderContainer
+    };
 
-          items.filter(item => item.type === "dir").forEach(folder => {
-            const section = createFolderElement();
-            section.dataset.folderPath = folder.name;
-            section.dataset.repoOwner = folder.repoOwner;
-            section.dataset.repoName = folder.repoName;
+    for (const item of treeData.tree) {
+      if (item.path.includes('.DS_Store')) continue;
 
-            const headingContainer = document.createElement('div');
-            headingContainer.style.position = 'relative';
+      const pathParts = item.path.split('/');
+      const itemName = pathParts[pathParts.length - 1];
+      const parentPath = pathParts.slice(0, -1).join('/');
 
-            const heading = document.createElement('h3');
-
-            const folderNameWrapper = document.createElement('div');
-            folderNameWrapper.className = 'folderName';
-
-            const folderImage = document.createElement('img');
-            folderImage.src = 'https://img.icons8.com/?size=100&id=2939&format=png&color=000000';
-            folderImage.alt = 'Folder Icon';
-            folderImage.style.width = '35px';
-            folderImage.style.height = '35px';
-            folderImage.style.marginRight = '10px';
-            folderImage.style.verticalAlign = 'middle';
-
-            folderNameWrapper.appendChild(folderImage);
-            folderNameWrapper.appendChild(document.createTextNode(folder.name));
-
-            heading.appendChild(folderNameWrapper);
-            section.onclick = (e) => handleFolderClick(e, section);
-
-            headingContainer.appendChild(heading);
-            headingContainer.appendChild(createPinButton(folder.name, section));
-
-            const contentContainer = document.createElement('div');
-            contentContainer.className = 'folder-content';
-            section.append(headingContainer, contentContainer);
-            folderContainer.appendChild(section);
-
-            fetchFolderContents(folder.repoOwner, folder.repoName, folder.name, contentContainer);
-          });
-          reorderFolders(folderContainer);
-        } catch (error) {
-          console.error("Error fetching folders:", error);
-        }
+      const parentContentContainer = folderElementMap[parentPath];
+      if (!parentContentContainer) {
+        console.warn(`Could not find parent element for path: ${item.path}`);
+        continue;
       }
 
-      async function fetchFolderContents(repoOwner, repoName, folderPath, parentElement) {
-        try {
-          const response = await fetch(`https://api.github.com/repos/${repoOwner}/${repoName}/contents/${folderPath}`);
-          const items = await response.json();
+      // A. Handle directory creation ('tree')
+      if (item.type === 'tree') {
+        const isNested = parentPath !== '';
+        const parentDomNode = isNested ? parentContentContainer.querySelector('.nested-folders') : parentContentContainer;
 
-          const renderVideoCardsFromFile = async (fileUrl) => {
-            const getYouTubeThumbnail = (url) => {
-              let videoId = null;
-              try {
-                const urlObj = new URL(url);
+        const folderElement = createFolderElement(isNested);
+        folderElement.dataset.folderPath = item.path;
+        folderElement.dataset.repoOwner = repoOwner;
+        folderElement.dataset.repoName = repoName;
 
-                // **PRIORITY 1: Standard YouTube URLs**
-                // Handles:
-                // - youtube.com?v=VIDEO_ID
-                // - youtube.com?si=...&v=VIDEO_ID
-                // - youtube.com/watch?v=VIDEO_ID
-                if (urlObj.hostname.includes('youtube.com')) {
-                  videoId = urlObj.searchParams.get('v');
-                }
-                // Handles:
-                // - youtu.be/VIDEO_ID (short URL)
-                else if (urlObj.hostname === 'youtu.be') {
-                  // Extracts VIDEO_ID from /VIDEO_ID
-                  videoId = urlObj.pathname.substring(1);
-                  if (videoId.includes('/')) { // If there are more slashes, take the first segment
-                    videoId = videoId.split('/')[0];
-                  }
-                }
-                // Handles:
-                // - https://www.youtube.com/watch?v=VIDEO_ID/embed/VIDEO_ID
-                // - https://www.youtube.com/watch?v=VIDEO_ID/v/VIDEO_ID
-                // - https://www.youtube.com/watch?v=VIDEO_ID/watch?v=VIDEO_ID
-                else if (urlObj.hostname === 'https://www.youtube.com/watch?v=VIDEO_ID' || urlObj.hostname.includes('youtube.com')) {
-                  // Try to get from 'v' parameter first
-                  videoId = urlObj.searchParams.get('v');
+        const headingContainer = document.createElement('div');
+        headingContainer.style.position = 'relative';
+        const heading = document.createElement(isNested ? 'h4' : 'h3');
+        const folderNameWrapper = document.createElement('div');
+        folderNameWrapper.className = 'folderName';
 
-                  if (!videoId) {
-                    // If not found, check path segments for common embed/v patterns
-                    const pathSegments = urlObj.pathname.split('/');
-                    const embedIndex = pathSegments.indexOf('embed');
-                    const vIndex = pathSegments.indexOf('v');
+        if (!isNested) {
+          const folderImage = document.createElement('img');
+          folderImage.src = 'https://img.icons8.com/?size=100&id=2939&format=png&color=000000';
+          folderImage.alt = 'Folder Icon';
+          folderImage.style.width = '35px';
+          folderImage.style.height = '35px';
+          folderImage.style.marginRight = '10px';
+          folderImage.style.verticalAlign = 'middle';
+          folderNameWrapper.appendChild(folderImage);
+        }
 
-                    if (embedIndex > -1 && embedIndex + 1 < pathSegments.length) {
-                      videoId = pathSegments[embedIndex + 1];
-                    } else if (vIndex > -1 && vIndex + 1 < pathSegments.length) {
-                      videoId = pathSegments[vIndex + 1];
-                    } else if (pathSegments.length > 1 && pathSegments[1].length === 11) { // Common for youtu.be/VIDEO_ID where VIDEO_ID is 11 chars
-                      videoId = pathSegments[1];
-                    }
-                  }
-                }
-                else if (urlObj.hostname.includes('googleusercontent.com')) {
-                  // Attempt to extract from 'v' parameter
-                  videoId = urlObj.searchParams.get('v');
-                  if (!videoId) {
-                    // Attempt to find 11-character string in pathname, common for video IDs
-                    const pathSegments = urlObj.pathname.split('/').filter(Boolean); // Filter Boolean removes empty strings
-                    for (const segment of pathSegments) {
-                      if (segment.length === 11 && /^[a-zA-Z0-9_-]{11}$/.test(segment)) { // Check for typical video ID characters
-                        videoId = segment;
-                        break;
-                      }
-                    }
-                  }
-                }
+        folderNameWrapper.appendChild(document.createTextNode(itemName));
+        heading.appendChild(folderNameWrapper);
+        folderElement.onclick = (e) => handleFolderClick(e, folderElement);
 
-              } catch (e) {
-                console.error("Error parsing URL for thumbnail:", url, e);
-              }
+        headingContainer.appendChild(heading);
+        headingContainer.appendChild(createPinButton(item.path, folderElement));
 
-              // Return the thumbnail URL or a placeholder if videoId is not found
-              return videoId ? `https://img.youtube.com/vi/${videoId}/sddefault.jpg` : 'https://placehold.co/480x270/2a2a2a/ffffff?text=Video+Not+Found';
-            };
+        const newContentContainer = document.createElement('div');
+        newContentContainer.className = 'folder-content';
+        const fileList = document.createElement('ul');
+        fileList.className = 'file-list';
+        const nestedFoldersContainer = document.createElement('div');
+        nestedFoldersContainer.className = 'nested-folders';
+        newContentContainer.append(fileList, nestedFoldersContainer);
 
-            try {
-              const response = await fetch(fileUrl);
-              if (!response.ok) return;
+        folderElement.append(headingContainer, newContentContainer);
+        parentDomNode.appendChild(folderElement);
 
-              const csvData = await response.text();
-              const rows = csvData.trim().split('\n').filter(row => row);
-              if (rows.length === 0) return;
+        // Store the new folder's content area for its children to find
+        folderElementMap[item.path] = newContentContainer;
+      }
+      // B. Handle file creation ('blob')
+      else if (item.type === 'blob') {
+        const fileList = parentContentContainer.querySelector('.file-list');
+        if (!fileList) continue;
 
-              const cardBox = document.createElement('div');
-              cardBox.className = 'cardBox';
+        if (itemName === 'links.txt') {
+          const downloadUrl = `https://raw.githubusercontent.com/${repoOwner}/${repoName}/main/${item.path}`;
+          renderVideoCardsFromFile(downloadUrl, parentContentContainer);
+          continue;
+        }
 
-              rows.forEach(row => {
-                const [videoUrl, title, description] = row.split(',').map(item => item.trim());
-                if (!videoUrl || !title || !description) return;
+        const ext = itemName.split('.').pop().toLowerCase();
+        if (validExtensions && validExtensions.has(ext)) {
+          const li = createFileItem(itemName);
+          const rawUrl = `https://raw.githubusercontent.com/${repoOwner}/${repoName}/main/${item.path}`;
 
-                const card = document.createElement('div');
-                card.className = 'card';
-                card.innerHTML = `
-                  <a href="${videoUrl}" target="_blank" rel="noopener noreferrer">
-                    <img src="${getYouTubeThumbnail(videoUrl)}" alt="${title}" onerror="this.onerror=null;this.src='https://placehold.co/480x270/ff0000/ffffff?text=Image+Failed';">
-                  </a>
-                  <h5 class="card-heading">${title}</h5>
-                  <p class="card-title">${description}</p>
-                `;
-                cardBox.appendChild(card);
-              });
-              parentElement.prepend(cardBox);
-            } catch (error) {
-              console.error("Error processing video links file:", error);
-            }
-          };
+          li.dataset.rawUrl = rawUrl;
+          li.dataset.fileType = isCodeFile(itemName) ? 'code' :
+            itemName.toLowerCase().endsWith('.pdf') ? 'pdf' : 'image';
 
-          const validItems = items.filter(item => {
-            if (item.name === '.DS_Store') return false;
-            if (item.name === 'links.txt') {
-              renderVideoCardsFromFile(item.download_url);
-              return false;
-            }
+          li.querySelector('.view-button').onclick = () => handleFileView(rawUrl, li.dataset.fileType);
+          li.querySelector('.download-button').onclick = () => handleFileDownload(rawUrl, li.dataset.fileType);
 
-            if (item.type === 'file') {
-              const ext = item.name.split('.').pop().toLowerCase();
-              return validExtensions.has(ext);
-            }
-            return true;
-          });
-
-          const fileList = document.createElement('ul');
-          fileList.className = 'file-list';
-
-          const nestedContainer = document.createElement('div');
-          nestedContainer.className = 'nested-folders';
-
-          parentElement.append(fileList, nestedContainer);
-
-          for (const item of validItems) {
-            if (item.type === "file") {
-              const li = createFileItem(item.name);
-              const rawUrl = `https://raw.githubusercontent.com/${repoOwner}/${repoName}/master/${folderPath}/${item.name}`;
-
-              li.dataset.rawUrl = rawUrl;
-              li.dataset.fileType = isCodeFile(item.name) ? 'code' :
-                item.name.toLowerCase().endsWith('.pdf') ? 'pdf' : 'image';
-
-              li.querySelector('.view-button').onclick = () => handleFileView(rawUrl, li.dataset.fileType);
-              li.querySelector('.download-button').onclick = (e) => handleFileDownload(rawUrl, li.dataset.fileType);
-
-              if (/\.(jpe?g|png|gif)$/i.test(item.name)) {
-                const img = document.createElement('img');
-                img.className = 'thumbnail';
-                img.src = rawUrl;
-                li.prepend(img);
-              }
-
-              fileList.appendChild(li);
-              document.dispatchEvent(new Event('folderContentLoaded'));
-
-            } else if (item.type === "dir") {
-              const nestedFolder = createFolderElement(true);
-              const newFolderPath = `${folderPath}/${item.name}`;
-              nestedFolder.dataset.folderPath = newFolderPath;
-              nestedFolder.dataset.repoOwner = repoOwner;
-              nestedFolder.dataset.repoName = repoName;
-
-              const folderLi = document.createElement('li');
-              folderLi.className = 'file-item';
-              folderLi.dataset.rawUrl = `https://github.com/${repoOwner}/${repoName}/tree/master/${newFolderPath}`;
-              folderLi.dataset.fileType = 'folder';
-              folderLi.innerHTML = `
-                        <span class="file-title">${item.name}</span>
-                        <button class="view-button">Open</button>
-                    `;
-              allFileElements.push(folderLi);
-
-              const headingContainer = document.createElement('div');
-              headingContainer.style.position = 'relative';
-
-              const heading = document.createElement('h4');
-              heading.textContent = item.name;
-              heading.onclick = (e) => handleFolderClick(e, nestedFolder);
-              headingContainer.appendChild(heading);
-              headingContainer.appendChild(createPinButton(nestedFolder.dataset.folderPath, nestedFolder));
-
-              const contentContainer = document.createElement('div');
-              contentContainer.className = 'folder-content';
-              nestedFolder.append(headingContainer, contentContainer);
-              nestedContainer.appendChild(nestedFolder);
-
-              fetchFolderContents(repoOwner, repoName, newFolderPath, contentContainer);
-              document.dispatchEvent(new Event('folderContentLoaded'));
-            }
+          if (/\.(jpe?g|png|gif)$/i.test(itemName)) {
+            const img = document.createElement('img');
+            img.className = 'thumbnail';
+            img.src = rawUrl;
+            li.prepend(img);
           }
-          reorderFolders(nestedContainer);
-        } catch (error) {
-          console.error(`Error fetching ${folderPath} from ${repoOwner}/${repoName}:`, error);
+          fileList.appendChild(li);
         }
       }
+    }
+
+    document.dispatchEvent(new Event('folderContentLoaded'));
+    reorderFolders(folderContainer);
+
+  } catch (error) {
+    console.error("Error fetching repository tree:", error);
+  }
+}
+
+
+// This function now just processes a file with video links
+async function renderVideoCardsFromFile(fileUrl, parentElement) {
+   const getYouTubeThumbnail = (url) => {
+        let videoId = null;
+        try {
+          const urlObj = new URL(url);
+          if (urlObj.hostname.includes('youtube.com') || urlObj.hostname.includes('youtu.be')) {
+             videoId = urlObj.searchParams.get('v') || urlObj.pathname.split('/').pop();
+          } else if (urlObj.hostname.includes('googleusercontent.com')) {
+             // Add robust extraction for googleusercontent URLs if needed
+             videoId = urlObj.searchParams.get('v');
+          }
+        } catch (e) {
+          console.error("Error parsing URL for thumbnail:", url, e);
+        }
+        return videoId ? `https://i.ytimg.com/vi/${videoId}/sddefault.jpg` : 'https://placehold.co/480x270/2a2a2a/ffffff?text=Video+Not+Found';
+      };
+
+      try {
+        const response = await fetch(fileUrl);
+        if (!response.ok) return;
+
+        const csvData = await response.text();
+        const rows = csvData.trim().split('\n').filter(row => row);
+        if (rows.length === 0) return;
+
+        const cardBox = document.createElement('div');
+        cardBox.className = 'cardBox';
+
+        rows.forEach(row => {
+          const [videoUrl, title, description] = row.split(',').map(item => item.trim());
+          if (!videoUrl || !title || !description) return;
+
+          const card = document.createElement('div');
+          card.className = 'card';
+          card.innerHTML = `
+            <a href="${videoUrl}" target="_blank" rel="noopener noreferrer">
+              <img src="${getYouTubeThumbnail(videoUrl)}" alt="${title}" onerror="this.onerror=null;this.src='https://placehold.co/480x270/ff0000/ffffff?text=Image+Failed';">
+            </a>
+            <h5 class="card-heading">${title}</h5>
+            <p class="card-title">${description}</p>
+          `;
+          cardBox.appendChild(card);
+        });
+        // Prepend to the main content area of the folder, not the file list
+        parentElement.prepend(cardBox);
+      } catch (error) {
+        console.error("Error processing video links file:", error);
+      }
+}
+
 
 
       const showPinOnlyButton = document.querySelector('.showPinOnly');
@@ -919,11 +847,8 @@ function performSearch() {
       }
 
       // Initialize
-      fetchFolders();
+      fetchRepositoryTree();
       initializeSearch();
-      addShareButton(pdfModal, () => currentPdfShareUrl);
-      addShareButton(codeModal, () => currentCodeShareUrl);
-      addShareButton(imageModal, () => currentImageShareUrl);
     })
     .catch(error => {
       console.error('Error loading configuration:', error);
