@@ -42,6 +42,7 @@
           <img src="Academic Archive Logo.png" alt="AppLogo">
         </button>
         <div class="nav-title" id="name">Academic Archive</div>
+       
       </div>
       <div class="nav-controls">
         <div class="search-container">
@@ -110,13 +111,20 @@
   </div>
 
   <hr class="break">
+  <div class="ratedisplay"> <div id="rateLimitDisplay" class="rate-limit-display"></div></div>
+
   <div class="recentFilesTitle">
     <div class="titles"><img src="https://img.icons8.com/?size=100&id=x8m2R7zNGqYO&format=png&color=000000" alt=""
         id="recentFilesLogo">
-      <h1>Recent Files</h1>
+      <h3>Recent Files</h3>
     </div>
-    <button id="clearRecent"><img src="https://img.icons8.com/?size=100&id=99971&format=png&color=000000"
-        alt=""></button>
+    <div class="recent-controls">
+      <button id="usageDashboardBtn" class="usage-dashboard-nav-btn" title="Usage Dashboard">
+        <img src="https://img.icons8.com/?size=100&id=hOMJZ7HTE4KN&format=png&color=000000" alt="">
+      </button>
+      <button id="clearRecent"><img src="https://img.icons8.com/?size=100&id=99971&format=png&color=000000"
+          alt=""></button>
+    </div>
   </div>
   <div id="recentFilesContainer"></div>
   <!-- Modal for PDF Viewer -->
@@ -227,6 +235,7 @@
   </script>
 
   <script src="script.js"></script>
+  <script src="features.js"></script>
 </body>
 
 </html>
