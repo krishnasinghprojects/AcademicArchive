@@ -325,8 +325,8 @@ main {
   box-shadow:
     0px 8px 25px rgba(0, 0, 0, 0.12),
     0px 2px 6px rgba(0, 0, 0, 0.05),
-    inset 0px 0px 10px hsla(210, 100%, 95%, 0.25),
-    inset 0px 0px 10px hsla(0, 0%, 50%, 0.05);
+    inset 0px 0px 10px hsla(210, 100%, 95%, 0.15),
+    inset 0px 0px 10px hsla(0, 0%, 50%, 0.15);
 }
 
 /* Folder Heading */
@@ -2207,11 +2207,6 @@ button:active {
   border: 1px solid transparent;
 }
 
-.stat-item:hover {
-  transform: translateX(5px);
-  border-color: var(--border-color);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
 
 /* Rate Limit Display */
 .rate-limit-info {
@@ -2495,7 +2490,7 @@ input:focus-visible {
 }
 
 .folder-node:hover .folder-size-info {
-  background: rgba(255, 255, 255, 0.25) !important;
+  background: rgba(255, 255, 255, 0.083) !important;
   transform: translateX(0) scale(1.02) !important;
 }
 
@@ -2554,18 +2549,12 @@ input:focus-visible {
 }
 
 .stat-item {
-  background: none;
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 10px;
-  padding: 15px;
-  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
+  background: var(--nav-bg);
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
 
-.stat-item:hover {
-  background: rgba(255, 255, 255, 0.15);
-  transform: translateY(-2px) scale(1.02);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 /* Enhanced theme toggle */
@@ -2628,15 +2617,6 @@ input:focus-visible {
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-[data-theme="dark"] .stat-item {
-  background: rgba(50, 50, 50, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-[data-theme="dark"] .stat-item:hover {
-  background: rgba(60, 60, 60, 0.9);
-}
-
 /* Responsive adjustments */
 @media screen and (max-width: 768px) {
   .usage-dashboard-nav-btn {
@@ -2672,4 +2652,9 @@ input:focus-visible {
   .nav-title {
     font-size: 1em;
   }
+}
+
+#imageViewer{
+  filter:none !important;
+  border-radius: 10px;
 }

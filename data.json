@@ -1,6 +1,8 @@
 {
     "repoConfigs": 
     [
-      { "owner": "krishnasinghprojects", "name": "AcademicArchiveDB" }
+      { "owner": "krishnasinghprojects", "name": "AcademicArchiveDB" },
+      { "owner": "krishnasinghprojects", "name": "JSPrograms" },
+      { "owner": "krishnasinghprojects", "name": "CPrograms" }
     ]
 }

@@ -424,11 +424,11 @@ function initializeUsageDashboard() {
         <h2 style="margin: 0; text-align: center;">Usage Dashboard</h2>
       </div>
       <div class="dashboard-content">
-        <div class="stat-item" style="margin-bottom: 15px;">
+        <div class="stat-item" style="margin-bottom: 5px;">
 
-          <span class="stat-value" style="font-size: 1em;">Total Time Spent : ${hours}h ${minutes}m</span>
+          <span class="stat-value" style="font-size: 1em; display:flex; flex-direction:column;"><span style="color: var(--text-color);">Total Time Spent </span><span>${hours}h ${minutes}m</span></span>
         </div>
-        <div class="api-status-bar" style="margin-top: 20px;">
+        <div class="api-status-bar">
           <div id="dashboardRateLimitDisplay">Loading...</div>
         </div>
       </div>

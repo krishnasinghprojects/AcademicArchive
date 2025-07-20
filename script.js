@@ -527,10 +527,13 @@ document.addEventListener('DOMContentLoaded', () => {
       // -------------------------------
 
       // New function to fetch the entire repository tree at once
-      async function fetchRepositoryTree() {
-        const repoOwner = repoConfigs[0].owner;
-        const repoName = repoConfigs[0].name;
-        const folderContainer = document.getElementById('folderContainer');
+       function fetchRepositoryTree() {
+        repoConfigs.forEach(async ({ owner, name }) => {
+          console.log("Owner:", owner);
+          console.log("Repo Name:", name);
+          const repoOwner=owner
+          const repoName=name
+          const folderContainer = document.getElementById('folderContainer');
         folderContainer.innerHTML = '';
 
         try {
@@ -662,6 +665,8 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
           console.error("Error fetching repository tree:", error);
         }
+        })      
+        
       }
 
 
@@ -1583,21 +1588,10 @@ function initializeUsageDashboard() {
       </div>
       <div class="dashboard-content">
         <div class="stat-item">
-          <span class="stat-label">Total Time Spent:</span>
-          <span class="stat-value">${hours}h ${minutes}m</span>
+          <div class="stat-label">Total Time Spent</div>
+          <div class="stat-value">${hours}h ${minutes}m</div>
         </div>
-        <div class="stat-item">
-          <span class="stat-label">Files Accessed:</span>
-          <span class="stat-value">${usageData.filesAccessed}</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-label">Favorites Count:</span>
-          <span class="stat-value">${JSON.parse(localStorage.getItem('pinnedFolders') || '[]').length}</span>
-        </div>
-        <div class="stat-item">
-          <span class="stat-label">Study Streaks:</span>
-          <span class="stat-value">${calculateStudyStreak()}</span>
-        </div>
+        
         <div class="rate-limit-section">
           <h3>API Status</h3>
           <div id="rateLimitDisplay">Loading...</div>
@@ -1723,13 +1717,7 @@ enhancementStyles.textContent = `
     gap: 15px;
   }
   
-  .stat-item {
-    display: flex;
-    justify-content: space-between;
-    padding: 10px;
-    background: var(--nav-bg);
-    border-radius: 8px;
-  }
+
   
   .stat-label {
     font-weight: bold;
