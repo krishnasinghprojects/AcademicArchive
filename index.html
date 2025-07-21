@@ -32,6 +32,55 @@
 
   <link rel="stylesheet" href="style.css">
 
+  <!-- Immediate blackout for seamless reload transitions -->
+  <script>
+    // Check if we need immediate blackout before any content loads
+    if (sessionStorage.getItem('showReloadBlackout') === 'true') {
+      // Use the stored theme from the reload process
+      const reloadTheme = sessionStorage.getItem('reloadTheme');
+      let isDarkTheme = false;
+
+      if (reloadTheme === 'dark') {
+        isDarkTheme = true;
+      } else if (reloadTheme === 'light') {
+        isDarkTheme = false;
+      } else {
+        // Fallback to system preference
+        isDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      }
+
+      const backgroundColor = isDarkTheme ? '#000' : '#fff';
+
+      document.documentElement.style.cssText = `
+        background: ${backgroundColor} !important;
+        overflow: hidden !important;
+      `;
+      document.write(`
+        <style>
+          body, html {
+            background: ${backgroundColor} !important;
+            overflow: hidden !important;
+          }
+          body * {
+            visibility: hidden !important;
+          }
+          #immediateBlackout {
+            visibility: visible !important;
+          }
+        </style>
+        <div id="immediateBlackout" style="
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: ${backgroundColor};
+          z-index: 999999;
+        "></div>
+      `);
+    }
+  </script>
+
 </head>
 
 <body>
@@ -42,7 +91,7 @@
           <img src="Academic Archive Logo.png" alt="AppLogo">
         </button>
         <div class="nav-title" id="name">Academic Archive</div>
-       
+
       </div>
       <div class="nav-controls">
         <div class="search-container">
@@ -111,7 +160,9 @@
   </div>
 
   <hr class="break">
-  <div class="ratedisplay"> <div id="rateLimitDisplay" class="rate-limit-display"></div></div>
+  <div class="ratedisplay">
+    <div id="rateLimitDisplay" class="rate-limit-display"></div>
+  </div>
 
   <div class="recentFilesTitle">
     <div class="titles"><img src="https://img.icons8.com/?size=100&id=x8m2R7zNGqYO&format=png&color=000000" alt=""

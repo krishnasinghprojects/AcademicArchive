@@ -261,16 +261,16 @@ body {
   font-size: 20px;
   margin-right: 10px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1),
-              0 2px 4px rgba(0, 0, 0, 0.05),
-              inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    0 2px 4px rgba(0, 0, 0, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
 }
 
 #themeToggle:hover {
   background: rgba(255, 255, 255, 0.3);
   transform: translateY(-1px);
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15),
-              0 3px 6px rgba(0, 0, 0, 0.08),
-              inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    0 3px 6px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
 }
 
 /* =====================================================
@@ -306,11 +306,11 @@ main {
   opacity: 0;
   transform: translateY(20px);
   animation: folderFadeIn 0.5s ease forwards;
-  transition: all 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94), 
-              transform 0.15s ease, 
-              box-shadow 0.15s ease, 
-              background 0.15s ease,
-              opacity 0.15s ease;
+  transition: all 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    background 0.15s ease,
+    opacity 0.15s ease;
 
   box-shadow:
     0px 5px 18px rgba(0, 0, 0, 0.08),
@@ -351,7 +351,7 @@ main {
 }
 
 .nested-folder {
-  
+
   min-width: fit-content;
   break-inside: avoid;
   background: var(--folder-bg);
@@ -360,11 +360,11 @@ main {
   border: none;
   border-radius: 8px;
   margin-bottom: 20px;
-  transition: all 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94), 
-              transform 0.15s ease, 
-              box-shadow 0.15s ease, 
-              background 0.15s ease,
-              opacity 0.15s ease;
+  transition: all 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    background 0.15s ease,
+    opacity 0.15s ease;
   animation: folderFadeIn 0.5s ease forwards;
   width: 100%;
   box-sizing: border-box;
@@ -758,7 +758,7 @@ button.download-button:hover {
   overflow: hidden;
   border-radius: 12px;
   margin-top: 20px;
-  
+
 
   box-shadow:
     2px 2px 4px #b8b8b8,
@@ -1019,7 +1019,9 @@ img:active {
     gap: 10px;
   }
 
-  #themeToggle, #searchButton, .pin-toggle-button {
+  #themeToggle,
+  #searchButton,
+  .pin-toggle-button {
     width: 32px;
     height: 32px;
   }
@@ -1040,7 +1042,7 @@ img:active {
   }
 
   li.file-item {
-    
+
     align-items: flex-start;
     gap: 10px;
     padding: 12px;
@@ -1053,7 +1055,8 @@ img:active {
     justify-content: flex-end;
   }
 
-  button.view-button, button.download-button {
+  button.view-button,
+  button.download-button {
     padding: 8px 16px;
     font-size: 0.9em;
   }
@@ -1106,6 +1109,7 @@ img:active {
     align-items: center;
     gap: 10px;
   }
+
   .nav-title {
     display: none;
   }
@@ -1128,12 +1132,14 @@ img:active {
     text-align: center;
     font-size: 1rem;
   }
+
   li.file-item {
     padding: 10px;
     font-size: 0.8rem;
   }
 
-  button.view-button, button.download-button {
+  button.view-button,
+  button.download-button {
     padding: 6px 12px;
     font-size: 0.8em;
   }
@@ -1220,16 +1226,16 @@ img:active {
   margin-right: -5px;
   backdrop-filter: blur(10px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1),
-              0 2px 4px rgba(0, 0, 0, 0.05),
-              inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    0 2px 4px rgba(0, 0, 0, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
 }
 
 #searchButton:hover {
   background: rgba(255, 255, 255, 0.3);
   transform: translateY(-1px);
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15),
-              0 3px 6px rgba(0, 0, 0, 0.08),
-              inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    0 3px 6px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
 }
 
 #searchButton:hover .search-icon {
@@ -1503,16 +1509,16 @@ img:active {
   align-items: center;
   transition: all 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1),
-              0 2px 4px rgba(0, 0, 0, 0.05),
-              inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    0 2px 4px rgba(0, 0, 0, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
 }
 
 .pin-toggle-button:hover {
   background: rgba(255, 255, 255, 0.3);
   transform: translateY(-1px);
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15),
-              0 3px 6px rgba(0, 0, 0, 0.08),
-              inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    0 3px 6px rgba(0, 0, 0, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5);
 }
 
 .pin-toggle-button img {
@@ -2273,7 +2279,7 @@ button[style*="position: fixed"]:hover {
     text-align: center;
   }
 
-  
+
 }
 
 /* Loading Animation for Rate Limit */
@@ -2345,11 +2351,13 @@ input:focus-visible {
   justify-content: center;
   gap: 0px;
 }
-.ratedisplay{
+
+.ratedisplay {
   display: flex;
   align-items: center;
   justify-content: center;
 }
+
 .rate-limit-display {
   display: block;
   margin: 30px;
@@ -2400,13 +2408,14 @@ input:focus-visible {
   border-radius: 5px;
   transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
-.usage-dashboard-nav-btn img{
+
+.usage-dashboard-nav-btn img {
   width: 25px;
   height: 25px;
 }
+
 .usage-dashboard-nav-btn:hover {
   transform: scale(1.05);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
 .usage-dashboard-nav-btn:active {
@@ -2423,7 +2432,7 @@ input:focus-visible {
 /* Enhanced glassy design for all elements */
 .folder-section,
 .nested-folder {
- 
+
   background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(15px);
   border: 1px solid rgba(255, 255, 255, 0.2);
@@ -2498,7 +2507,7 @@ input:focus-visible {
 .file-info {
   display: flex;
   flex-direction: column;
-  
+
   gap: 4px;
 }
 
@@ -2654,7 +2663,7 @@ input:focus-visible {
   }
 }
 
-#imageViewer{
-  filter:none !important;
+#imageViewer {
+  filter: none !important;
   border-radius: 10px;
 }

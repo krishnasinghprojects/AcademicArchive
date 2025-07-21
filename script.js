@@ -1,9 +1,26 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-  fetch('data.json')
-    .then(response => response.json())
-    .then(data => {
-
+  // Check for full data config in localStorage first
+  const storedFullConfig = localStorage.getItem('fullDataConfig');
+  let dataPromise;
+  
+  if (storedFullConfig) {
+    try {
+      const parsedFullConfig = JSON.parse(storedFullConfig);
+      dataPromise = Promise.resolve(parsedFullConfig);
+    } catch (error) {
+      console.error('Error parsing stored full config, falling back to data.json:', error);
+      dataPromise = fetch('data.json').then(response => response.json());
+    }
+  } else {
+    dataPromise = fetch('data.json').then(response => response.json()).then(data => {
+      // Store the full config in localStorage for future use
+      localStorage.setItem('fullDataConfig', JSON.stringify(data));
+      return data;
+    });
+  }
+  
+  dataPromise.then(data => {
       const repoConfigs = data.repoConfigs;
 
       // Initialize essential features only - optimized for performance
@@ -918,6 +935,9 @@ document.addEventListener('DOMContentLoaded', () => {
         searchInput.addEventListener('input', performSearch);
       }
 
+      // Make fetchRepositoryTree globally accessible
+      window.fetchRepositoryTree = fetchRepositoryTree;
+      
       // Initialize
       fetchRepositoryTree();
       initializeSearch();
