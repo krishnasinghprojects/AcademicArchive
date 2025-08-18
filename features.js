@@ -639,6 +639,7 @@ function initializeUsageDashboard() {
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 16px; backdrop-filter: blur(20px);
             transition: all 0.3s ease;
+            margin-bottom: 50px;
           ">
             <h3 style="
               margin: 0 0 clamp(16px, 3vw, 20px) 0; 
@@ -703,7 +704,6 @@ function initializeUsageDashboard() {
             </div>
             
             <div style="
-              max-height: clamp(200px, 30vh, 300px); 
               overflow-y: auto;
               scrollbar-width: thin;
               scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
