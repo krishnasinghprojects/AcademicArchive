@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Check for full data config in localStorage first
   const storedFullConfig = localStorage.getItem('fullDataConfig');
   let dataPromise;
-  
+
   if (storedFullConfig) {
     try {
       const parsedFullConfig = JSON.parse(storedFullConfig);
@@ -19,538 +19,538 @@ document.addEventListener('DOMContentLoaded', () => {
       return data;
     });
   }
-  
+
   dataPromise.then(data => {
-      const repoConfigs = data.repoConfigs;
+    const repoConfigs = data.repoConfigs;
 
-      // Initialize essential features only - optimized for performance
-      setTimeout(() => {
-        if (typeof initializeUsageDashboard === 'function') initializeUsageDashboard();
-        if (typeof initializeRateLimitTracking === 'function') initializeRateLimitTracking();
-        if (typeof initializeFolderSizeTracking === 'function') initializeFolderSizeTracking();
-        if (typeof enhanceRecentFilesWithTimestamps === 'function') enhanceRecentFilesWithTimestamps();
-        if (typeof enhanceCSSTransitions === 'function') enhanceCSSTransitions();
-      }, 100);
-      // Modal elements
-      const pdfModal = document.getElementById('pdfModal');
-      const closeModal = document.getElementById('closeModal');
-      const pdfViewer = document.getElementById('pdfViewer');
-      const imageModal = document.getElementById('imageModal');
-      const closeImageModal = document.getElementById('closeImageModal');
-      const imageViewer = document.getElementById('imageViewer');
-      const prevImageBtn = document.getElementById('prevImage');
-      const nextImageBtn = document.getElementById('nextImage');
-      const codeModal = document.getElementById('codeModal');
-      const closeCodeModal = document.getElementById('closeCodeModal');
-      const codeViewer = document.getElementById('codeViewer');
+    // Initialize essential features only - optimized for performance
+    setTimeout(() => {
+      if (typeof initializeUsageDashboard === 'function') initializeUsageDashboard();
+      if (typeof initializeRateLimitTracking === 'function') initializeRateLimitTracking();
+      if (typeof initializeFolderSizeTracking === 'function') initializeFolderSizeTracking();
+      if (typeof enhanceRecentFilesWithTimestamps === 'function') enhanceRecentFilesWithTimestamps();
+      if (typeof enhanceCSSTransitions === 'function') enhanceCSSTransitions();
+    }, 100);
+    // Modal elements
+    const pdfModal = document.getElementById('pdfModal');
+    const closeModal = document.getElementById('closeModal');
+    const pdfViewer = document.getElementById('pdfViewer');
+    const imageModal = document.getElementById('imageModal');
+    const closeImageModal = document.getElementById('closeImageModal');
+    const imageViewer = document.getElementById('imageViewer');
+    const prevImageBtn = document.getElementById('prevImage');
+    const nextImageBtn = document.getElementById('nextImage');
+    const codeModal = document.getElementById('codeModal');
+    const closeCodeModal = document.getElementById('closeCodeModal');
+    const codeViewer = document.getElementById('codeViewer');
 
-      // State variables
-      let currentImageIndex = 0;
-      let currentImageList = [];
-      let currentPdfShareUrl = "";
-      let currentCodeShareUrl = "";
-      let currentImageShareUrl = "";
-      let notificationCooldown = false;
-      let pinnedFolders = JSON.parse(localStorage.getItem('pinnedFolders')) || [];
-      let allFileElements = [];
+    // State variables
+    let currentImageIndex = 0;
+    let currentImageList = [];
+    let currentPdfShareUrl = "";
+    let currentCodeShareUrl = "";
+    let currentImageShareUrl = "";
+    let notificationCooldown = false;
+    let pinnedFolders = JSON.parse(localStorage.getItem('pinnedFolders')) || [];
+    let allFileElements = [];
 
-      let searchActive = false;
+    let searchActive = false;
 
-      document.getElementById('searchButton').addEventListener('click', function (e) {
-        const input = document.getElementById('searchInput');
+    document.getElementById('searchButton').addEventListener('click', function (e) {
+      const input = document.getElementById('searchInput');
 
-        if (!searchActive) {
-          // Activate search
-          input.classList.add('active');
-          input.focus();
-          searchActive = true;
-        } else {
-          // Perform search only when active
-          if (input.value.trim()) {
-            performSearch();
-          }
-          input.classList.remove('active');
-          searchActive = false;
+      if (!searchActive) {
+        // Activate search
+        input.classList.add('active');
+        input.focus();
+        searchActive = true;
+      } else {
+        // Perform search only when active
+        if (input.value.trim()) {
+          performSearch();
         }
-      });
+        input.classList.remove('active');
+        searchActive = false;
+      }
+    });
 
-      function displayRecentFiles() {
-        const recentFilesContainer = document.getElementById('recentFilesContainer');
-        const recentFilesContainer2 = document.getElementById('recentFilesContainer2');
-        if (!recentFilesContainer) {
-          console.error("Error: 'recentFilesContainer' element not found.");
+    function displayRecentFiles() {
+      const recentFilesContainer = document.getElementById('recentFilesContainer');
+      const recentFilesContainer2 = document.getElementById('recentFilesContainer2');
+      if (!recentFilesContainer) {
+        console.error("Error: 'recentFilesContainer' element not found.");
+        return;
+      }
+
+      // Clear any existing content in the container
+      recentFilesContainer.innerHTML = '';
+
+      try {
+        const recentFiles = JSON.parse(localStorage.getItem('recentFiles')) || [];
+
+        if (recentFiles.length === 0) {
+          recentFilesContainer.textContent = "No recent files to display.";
+          recentFilesContainer2.innerHTML = "No recent files to display.";
           return;
         }
+
+        recentFiles.forEach(file => {
+          const fileEntryDiv = document.createElement('li');
+          fileEntryDiv.classList.add('file-item');
+          fileEntryDiv.classList.add('recentFiles');
+
+          // Extract a simple file name from the rawUrl
+          const fileName = file.rawUrl.split('/').pop() || 'Unknown File';
+
+          // Calculate time ago
+          const viewedAt = new Date(file.viewedAt);
+          const now = new Date();
+          const diffMs = now - viewedAt;
+          const diffMins = Math.floor(diffMs / 60000);
+          const diffHours = Math.floor(diffMs / 3600000);
+          const diffDays = Math.floor(diffMs / 86400000);
+
+          let timeAgo;
+          if (diffMins < 1) timeAgo = 'Just now';
+          else if (diffMins < 60) timeAgo = `${diffMins}m ago`;
+          else if (diffHours < 24) timeAgo = `${diffHours}h ago`;
+          else timeAgo = `${diffDays}d ago`;
+
+          // Create file info container
+          const fileInfo = document.createElement('div');
+          fileInfo.className = 'file-info';
+
+          const fileNameSpan = document.createElement('span');
+          fileNameSpan.className = 'file-title';
+          fileNameSpan.textContent = fileName;
+          fileInfo.appendChild(fileNameSpan);
+
+          const timestampSpan = document.createElement('span');
+          timestampSpan.className = 'file-timestamp';
+          timestampSpan.textContent = `Last accessed: ${timeAgo}`;
+          fileInfo.appendChild(timestampSpan);
+
+          fileEntryDiv.appendChild(fileInfo);
+
+          const buttonContainer = document.createElement('div');
+          buttonContainer.className = 'file-buttons';
+          fileEntryDiv.appendChild(buttonContainer);
+
+          // View Button
+          const viewButton = document.createElement('button');
+          viewButton.textContent = 'View';
+          viewButton.className = 'view-button';
+          viewButton.onclick = () => handleFileView(file.rawUrl, file.fileType);
+          buttonContainer.appendChild(viewButton);
+
+          // Download Button
+          const downloadButton = document.createElement('button');
+          downloadButton.textContent = file.fileType === 'code' ? 'Copy' : 'Download';
+          downloadButton.className = 'download-button';
+          downloadButton.onclick = () => handleFileDownload(file.rawUrl, file.fileType);
+          buttonContainer.appendChild(downloadButton);
+
+          recentFilesContainer.appendChild(fileEntryDiv);
+        });
+
 
         // Clear any existing content in the container
-        recentFilesContainer.innerHTML = '';
+        recentFilesContainer2.innerHTML = '';
 
-        try {
-          const recentFiles = JSON.parse(localStorage.getItem('recentFiles')) || [];
+        recentFiles.forEach(file => {
+          const fileEntryDiv = document.createElement('li');
+          fileEntryDiv.classList.add('file-item');
+          fileEntryDiv.classList.add('recentFiles');
 
-          if (recentFiles.length === 0) {
-            recentFilesContainer.textContent = "No recent files to display.";
-            recentFilesContainer2.innerHTML = "No recent files to display.";
-            return;
-          }
+          // Extract a simple file name from the rawUrl
+          const fileName = file.rawUrl.split('/').pop() || 'Unknown File';
 
-          recentFiles.forEach(file => {
-            const fileEntryDiv = document.createElement('li');
-            fileEntryDiv.classList.add('file-item');
-            fileEntryDiv.classList.add('recentFiles');
+          // Calculate time ago
+          const viewedAt = new Date(file.viewedAt);
+          const now = new Date();
+          const diffMs = now - viewedAt;
+          const diffMins = Math.floor(diffMs / 60000);
+          const diffHours = Math.floor(diffMs / 3600000);
+          const diffDays = Math.floor(diffMs / 86400000);
 
-            // Extract a simple file name from the rawUrl
-            const fileName = file.rawUrl.split('/').pop() || 'Unknown File';
-            
-            // Calculate time ago
-            const viewedAt = new Date(file.viewedAt);
-            const now = new Date();
-            const diffMs = now - viewedAt;
-            const diffMins = Math.floor(diffMs / 60000);
-            const diffHours = Math.floor(diffMs / 3600000);
-            const diffDays = Math.floor(diffMs / 86400000);
-            
-            let timeAgo;
-            if (diffMins < 1) timeAgo = 'Just now';
-            else if (diffMins < 60) timeAgo = `${diffMins}m ago`;
-            else if (diffHours < 24) timeAgo = `${diffHours}h ago`;
-            else timeAgo = `${diffDays}d ago`;
+          let timeAgo;
+          if (diffMins < 1) timeAgo = 'Just now';
+          else if (diffMins < 60) timeAgo = `${diffMins}m ago`;
+          else if (diffHours < 24) timeAgo = `${diffHours}h ago`;
+          else timeAgo = `${diffDays}d ago`;
 
-            // Create file info container
-            const fileInfo = document.createElement('div');
-            fileInfo.className = 'file-info';
-            
-            const fileNameSpan = document.createElement('span');
-            fileNameSpan.className = 'file-title';
-            fileNameSpan.textContent = fileName;
-            fileInfo.appendChild(fileNameSpan);
-            
-            const timestampSpan = document.createElement('span');
-            timestampSpan.className = 'file-timestamp';
-            timestampSpan.textContent = `Last accessed: ${timeAgo}`;
-            fileInfo.appendChild(timestampSpan);
-            
-            fileEntryDiv.appendChild(fileInfo);
+          // Create file info container
+          const fileInfo = document.createElement('div');
+          fileInfo.className = 'file-info';
 
-            const buttonContainer = document.createElement('div');
-            buttonContainer.className = 'file-buttons';
-            fileEntryDiv.appendChild(buttonContainer);
+          const fileNameSpan = document.createElement('span');
+          fileNameSpan.className = 'file-title';
+          fileNameSpan.textContent = fileName;
+          fileInfo.appendChild(fileNameSpan);
 
-            // View Button
-            const viewButton = document.createElement('button');
-            viewButton.textContent = 'View';
-            viewButton.className = 'view-button';
-            viewButton.onclick = () => handleFileView(file.rawUrl, file.fileType);
-            buttonContainer.appendChild(viewButton);
+          const timestampSpan = document.createElement('span');
+          timestampSpan.className = 'file-timestamp';
+          timestampSpan.textContent = `Last accessed: ${timeAgo}`;
+          fileInfo.appendChild(timestampSpan);
 
-            // Download Button
-            const downloadButton = document.createElement('button');
-            downloadButton.textContent = file.fileType === 'code' ? 'Copy' : 'Download';
-            downloadButton.className = 'download-button';
-            downloadButton.onclick = () => handleFileDownload(file.rawUrl, file.fileType);
-            buttonContainer.appendChild(downloadButton);
+          fileEntryDiv.appendChild(fileInfo);
 
-            recentFilesContainer.appendChild(fileEntryDiv);
-          });
+          const buttonContainer = document.createElement('div');
+          buttonContainer.className = 'file-buttons';
+          fileEntryDiv.appendChild(buttonContainer);
 
+          // View Button
+          const viewButton = document.createElement('button');
+          viewButton.textContent = 'View';
+          viewButton.className = 'view-button';
+          viewButton.onclick = () => handleFileView(file.rawUrl, file.fileType);
+          buttonContainer.appendChild(viewButton);
 
-          // Clear any existing content in the container
-          recentFilesContainer2.innerHTML = '';
+          // Download Button
+          const downloadButton = document.createElement('button');
+          downloadButton.textContent = file.fileType === 'code' ? 'Copy' : 'Download';
+          downloadButton.className = 'download-button';
+          downloadButton.onclick = () => handleFileDownload(file.rawUrl, file.fileType);
+          buttonContainer.appendChild(downloadButton);
 
-          recentFiles.forEach(file => {
-            const fileEntryDiv = document.createElement('li');
-            fileEntryDiv.classList.add('file-item');
-            fileEntryDiv.classList.add('recentFiles');
-
-            // Extract a simple file name from the rawUrl
-            const fileName = file.rawUrl.split('/').pop() || 'Unknown File';
-            
-            // Calculate time ago
-            const viewedAt = new Date(file.viewedAt);
-            const now = new Date();
-            const diffMs = now - viewedAt;
-            const diffMins = Math.floor(diffMs / 60000);
-            const diffHours = Math.floor(diffMs / 3600000);
-            const diffDays = Math.floor(diffMs / 86400000);
-            
-            let timeAgo;
-            if (diffMins < 1) timeAgo = 'Just now';
-            else if (diffMins < 60) timeAgo = `${diffMins}m ago`;
-            else if (diffHours < 24) timeAgo = `${diffHours}h ago`;
-            else timeAgo = `${diffDays}d ago`;
-
-            // Create file info container
-            const fileInfo = document.createElement('div');
-            fileInfo.className = 'file-info';
-            
-            const fileNameSpan = document.createElement('span');
-            fileNameSpan.className = 'file-title';
-            fileNameSpan.textContent = fileName;
-            fileInfo.appendChild(fileNameSpan);
-            
-            const timestampSpan = document.createElement('span');
-            timestampSpan.className = 'file-timestamp';
-            timestampSpan.textContent = `Last accessed: ${timeAgo}`;
-            fileInfo.appendChild(timestampSpan);
-            
-            fileEntryDiv.appendChild(fileInfo);
-
-            const buttonContainer = document.createElement('div');
-            buttonContainer.className = 'file-buttons';
-            fileEntryDiv.appendChild(buttonContainer);
-
-            // View Button
-            const viewButton = document.createElement('button');
-            viewButton.textContent = 'View';
-            viewButton.className = 'view-button';
-            viewButton.onclick = () => handleFileView(file.rawUrl, file.fileType);
-            buttonContainer.appendChild(viewButton);
-
-            // Download Button
-            const downloadButton = document.createElement('button');
-            downloadButton.textContent = file.fileType === 'code' ? 'Copy' : 'Download';
-            downloadButton.className = 'download-button';
-            downloadButton.onclick = () => handleFileDownload(file.rawUrl, file.fileType);
-            buttonContainer.appendChild(downloadButton);
-
-            recentFilesContainer2.appendChild(fileEntryDiv);
-          });
-        } catch (e) {
-          console.error("Error displaying recent files:", e);
-          recentFilesContainer.textContent = "Error loading recent files.";
-        }
-      }
-      displayRecentFiles()
-
-
-      // Close search when clicking outside
-      document.addEventListener('click', (e) => {
-        if (!e.target.closest('.search-container')) {
-          document.getElementById('searchInput').classList.remove('active');
-          searchActive = false;
-        }
-      });
-
-      // -------------------------------
-      // Enhanced Share Functionality (Mobile Support)
-      // -------------------------------
-      async function copyToClipboardWithNotification(text, event) {
-        if (notificationCooldown) return;
-        notificationCooldown = true;
-
-        try {
-          // Mobile-friendly clipboard handling
-          if (navigator.clipboard) {
-            await navigator.clipboard.writeText(text);
-          } else {
-            // Fallback for older browsers
-            const textArea = document.createElement('textarea');
-            textArea.value = text;
-            document.body.appendChild(textArea);
-            textArea.select();
-            document.execCommand('copy');
-            document.body.removeChild(textArea);
-          }
-
-          const buttonRect = event ? event.target.getBoundingClientRect() : { left: '50%', top: '90%' };
-          const notification = document.createElement('div');
-          notification.className = 'share-notification';
-          notification.textContent = "Link Copied!";
-
-          // Mobile-responsive positioning
-          const isMobile = true;
-          Object.assign(notification.style, {
-            position: 'fixed',
-            padding: '8px 16px',
-            backgroundColor: 'rgba(255, 255, 255, 0.9)',
-            color: '#00a521',
-            fontSize: isMobile ? '14px' : '12px',
-            fontWeight: 'bold',
-            borderRadius: '5px',
-            zIndex: '2000',
-            left: isMobile ? '50%' : `${buttonRect.right - 2}px`,
-            top: isMobile ? '90%' : `${buttonRect.top - 5}px`,
-            transform: isMobile ? 'translate(-50%, -50%)' : 'translateX(-20px)',
-            opacity: '0',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-            transition: 'all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-            pointerEvents: 'none',
-            backdropFilter: 'blur(4px)',
-            WebkitBackdropFilter: 'blur(4px)',
-            whiteSpace: 'nowrap'
-          });
-
-          document.body.appendChild(notification);
-
-          // Trigger animation
-          requestAnimationFrame(() => {
-            notification.style.opacity = '1';
-            notification.style.transform = isMobile
-              ? 'translate(-50%, -50%) scale(1)'
-              : 'translateX(0) scale(1)';
-          });
-
-          setTimeout(() => {
-            notification.style.opacity = '0';
-            notification.style.transform = isMobile
-              ? 'translate(-50%, -50%) scale(0.9)'
-              : 'translateX(10px) scale(0.9)';
-
-            setTimeout(() => {
-              notification.remove();
-              notificationCooldown = false;
-            }, 400);
-          }, 1500);
-        } catch (err) {
-          console.error("Failed to copy text: ", err);
-          notificationCooldown = false;
-          // Fallback for iOS: Show prompt
-          if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-            prompt("Copy this URL:", text);
-          }
-        }
-      }
-
-
-      // -------------------------------
-      // Restored Modal Transitions
-      // -------------------------------
-      function handleModalClose(modal) {
-        return function () {
-          displayRecentFiles()
-          const modalContent = modal.querySelector('.modal-content');
-          modalContent.classList.add('closing');
-          document.body.classList.remove('modal-open');
-          setTimeout(() => {
-            modal.style.display = "none";
-            modalContent.classList.remove('closing');
-
-            // Reset modal content
-            if (modal === pdfModal) pdfViewer.src = "";
-            if (modal === imageModal) {
-              imageViewer.src = "";
-              currentImageList = [];
-            }
-            if (modal === codeModal) codeViewer.textContent = "";
-          }, 200);
-        };
-      }
-
-      function setupModal(modal, closeButton) {
-        const closeFunction = handleModalClose(modal);
-
-        // Close button click
-        closeButton.onclick = closeFunction;
-
-        // Outside click
-        modal.addEventListener('click', (event) => {
-          if (event.target === modal) closeFunction();
+          recentFilesContainer2.appendChild(fileEntryDiv);
         });
+      } catch (e) {
+        console.error("Error displaying recent files:", e);
+        recentFilesContainer.textContent = "Error loading recent files.";
       }
+    }
+    displayRecentFiles()
 
-      // Initialize modals with transitions
-      setupModal(pdfModal, closeModal);
-      setupModal(imageModal, closeImageModal);
-      setupModal(codeModal, closeCodeModal);
 
-      // -------------------------------
-      // Animated Folder Management
-      // -------------------------------
-      function handleFolderClick(event, folderElement) {
-        const clickedElement = event.target;
+    // Close search when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.search-container')) {
+        document.getElementById('searchInput').classList.remove('active');
+        searchActive = false;
+      }
+    });
 
-        if (clickedElement.closest('.view-button') ||
-          clickedElement.closest('.download-button') ||
-          clickedElement.closest('.file-title')) {
-          event.stopPropagation();
-          return;
-        }
+    // -------------------------------
+    // Enhanced Share Functionality (Mobile Support)
+    // -------------------------------
+    async function copyToClipboardWithNotification(text, event) {
+      if (notificationCooldown) return;
+      notificationCooldown = true;
 
-        event.stopPropagation();
-
-        const wasActive = folderElement.classList.contains('active');
-        const parentContainer = folderElement.parentElement;
-
-        folderElement.classList.remove('collapsing', 'expanding');
-
-        if (!wasActive) {
-          Array.from(parentContainer.children).forEach(child => {
-            if (child !== folderElement && child.classList.contains('folder-node')) {
-              if (child.classList.contains('active')) {
-                child.classList.remove('active');
-              }
-            }
-          });
-
-          folderElement.classList.remove('active');
-          void folderElement.offsetWidth;
-          folderElement.classList.add('active');
-
+      try {
+        // Mobile-friendly clipboard handling
+        if (navigator.clipboard) {
+          await navigator.clipboard.writeText(text);
         } else {
-          folderElement.classList.remove('active');
+          // Fallback for older browsers
+          const textArea = document.createElement('textarea');
+          textArea.value = text;
+          document.body.appendChild(textArea);
+          textArea.select();
+          document.execCommand('copy');
+          document.body.removeChild(textArea);
         }
-      }
 
-      function createFolderElement(isNested = false) {
-        const element = document.createElement(isNested ? 'div' : 'section');
-        element.className = `${isNested ? 'nested-folder' : 'folder-section'} folder-node`;
-        return element;
-      }
+        const buttonRect = event ? event.target.getBoundingClientRect() : { left: '50%', top: '90%' };
+        const notification = document.createElement('div');
+        notification.className = 'share-notification';
+        notification.textContent = "Link Copied!";
 
-      function createPinButton(folderPath, element) {
-        const pinBtn = document.createElement('img');
-        pinBtn.src = 'https://img.icons8.com/?size=100&id=XghFnrM2lzSW&format=png&color=000000';
-        Object.assign(pinBtn.style, {
-          position: 'absolute',
-          top: '0',
-          right: '0',
-          width: '30px',
-          height: '30px',
-          cursor: 'pointer',
-          opacity: pinnedFolders.includes(folderPath) ? '1' : '0.3',
-          filter: 'invert(var(--reverse))',
-          transition: 'opacity 0.2s ease'
+        // Mobile-responsive positioning
+        const isMobile = true;
+        Object.assign(notification.style, {
+          position: 'fixed',
+          padding: '8px 16px',
+          backgroundColor: 'rgba(255, 255, 255, 0.9)',
+          color: '#00a521',
+          fontSize: isMobile ? '14px' : '12px',
+          fontWeight: 'bold',
+          borderRadius: '5px',
+          zIndex: '2000',
+          left: isMobile ? '50%' : `${buttonRect.right - 2}px`,
+          top: isMobile ? '90%' : `${buttonRect.top - 5}px`,
+          transform: isMobile ? 'translate(-50%, -50%)' : 'translateX(-20px)',
+          opacity: '0',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+          transition: 'all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+          pointerEvents: 'none',
+          backdropFilter: 'blur(4px)',
+          WebkitBackdropFilter: 'blur(4px)',
+          whiteSpace: 'nowrap'
         });
-        pinBtn.onclick = (e) => {
-          e.stopPropagation();
-          const index = pinnedFolders.indexOf(folderPath);
-          if (index > -1) {
-            pinnedFolders.splice(index, 1);
-          } else {
-            pinnedFolders.push(folderPath);
-          }
-          localStorage.setItem('pinnedFolders', JSON.stringify(pinnedFolders));
-          pinBtn.style.opacity = pinnedFolders.includes(folderPath) ? '1' : '0.3';
-          reorderFolders(element.parentElement);
-        };
-        return pinBtn;
-      }
 
-      function reorderFolders(container) {
-        const children = Array.from(container.children);
-        const originalOrder = children.map(el => el.dataset.folderPath);
-        const newOrder = [...children].sort((a, b) => {
-          const aPinned = pinnedFolders.includes(a.dataset.folderPath);
-          const bPinned = pinnedFolders.includes(b.dataset.folderPath);
-          return bPinned - aPinned;
-        }).map(el => el.dataset.folderPath);
+        document.body.appendChild(notification);
 
-        // Only reorder if positions actually change
-        if (JSON.stringify(originalOrder) === JSON.stringify(newOrder)) return;
+        // Trigger animation
+        requestAnimationFrame(() => {
+          notification.style.opacity = '1';
+          notification.style.transform = isMobile
+            ? 'translate(-50%, -50%) scale(1)'
+            : 'translateX(0) scale(1)';
+        });
 
-        // Disable transitions during reordering
-        container.style.transition = 'none';
-        children.sort((a, b) => {
-          const aPinned = pinnedFolders.includes(a.dataset.folderPath);
-          const bPinned = pinnedFolders.includes(b.dataset.folderPath);
-          return bPinned - aPinned;
-        }).forEach(child => container.appendChild(child));
+        setTimeout(() => {
+          notification.style.opacity = '0';
+          notification.style.transform = isMobile
+            ? 'translate(-50%, -50%) scale(0.9)'
+            : 'translateX(10px) scale(0.9)';
 
-        // Force reflow and restore transitions
-        void container.offsetHeight;
-        container.style.transition = '';
-      }
-
-      // -------------------------------
-      // Filtered File Handling
-      // -------------------------------
-      const validExtensions = new Set([
-        'pdf', 'jpg', 'jpeg', 'png', 'gif',
-        'py', 'c', 'cpp', 'js', 'java', 'cs',
-        'ts', 'go', 'rb', 'php', 'swift', 'rs',
-        'html', 'css'
-      ]);
-
-      function createFileItem(fileName) {
-        const li = document.createElement('li');
-        li.className = 'file-item';
-
-        const isPdfFile = fileName.toLowerCase().endsWith('.pdf');
-        const fileIsCode = isCodeFile(fileName); // Use your existing isCodeFile function
-
-        let innerHtmlContent = ``;
-
-        if (isPdfFile) {
-          innerHtmlContent += `<img src="https://img.icons8.com/?size=25&id=59859&format=png&color=000000" alt="PDF icon" class="file-icon">`;
-        } else if (fileIsCode) { // Add this condition for code files
-          innerHtmlContent += `<img src="https://img.icons8.com/?size=20&id=OTlhcalmkiBX&format=png&color=000000" alt="Code icon" class="file-icon code-file-icon">`;
+          setTimeout(() => {
+            notification.remove();
+            notificationCooldown = false;
+          }, 400);
+        }, 1500);
+      } catch (err) {
+        console.error("Failed to copy text: ", err);
+        notificationCooldown = false;
+        // Fallback for iOS: Show prompt
+        if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+          prompt("Copy this URL:", text);
         }
+      }
+    }
 
-        innerHtmlContent += `
+
+    // -------------------------------
+    // Restored Modal Transitions
+    // -------------------------------
+    function handleModalClose(modal) {
+      return function () {
+        displayRecentFiles()
+        const modalContent = modal.querySelector('.modal-content');
+        modalContent.classList.add('closing');
+        document.body.classList.remove('modal-open');
+        setTimeout(() => {
+          modal.style.display = "none";
+          modalContent.classList.remove('closing');
+
+          // Reset modal content
+          if (modal === pdfModal) pdfViewer.src = "";
+          if (modal === imageModal) {
+            imageViewer.src = "";
+            currentImageList = [];
+          }
+          if (modal === codeModal) codeViewer.textContent = "";
+        }, 200);
+      };
+    }
+
+    function setupModal(modal, closeButton) {
+      const closeFunction = handleModalClose(modal);
+
+      // Close button click
+      closeButton.onclick = closeFunction;
+
+      // Outside click
+      modal.addEventListener('click', (event) => {
+        if (event.target === modal) closeFunction();
+      });
+    }
+
+    // Initialize modals with transitions
+    setupModal(pdfModal, closeModal);
+    setupModal(imageModal, closeImageModal);
+    setupModal(codeModal, closeCodeModal);
+
+    // -------------------------------
+    // Animated Folder Management
+    // -------------------------------
+    function handleFolderClick(event, folderElement) {
+      const clickedElement = event.target;
+
+      if (clickedElement.closest('.view-button') ||
+        clickedElement.closest('.download-button') ||
+        clickedElement.closest('.file-title')) {
+        event.stopPropagation();
+        return;
+      }
+
+      event.stopPropagation();
+
+      const wasActive = folderElement.classList.contains('active');
+      const parentContainer = folderElement.parentElement;
+
+      folderElement.classList.remove('collapsing', 'expanding');
+
+      if (!wasActive) {
+        Array.from(parentContainer.children).forEach(child => {
+          if (child !== folderElement && child.classList.contains('folder-node')) {
+            if (child.classList.contains('active')) {
+              child.classList.remove('active');
+            }
+          }
+        });
+
+        folderElement.classList.remove('active');
+        void folderElement.offsetWidth;
+        folderElement.classList.add('active');
+
+      } else {
+        folderElement.classList.remove('active');
+      }
+    }
+
+    function createFolderElement(isNested = false) {
+      const element = document.createElement(isNested ? 'div' : 'section');
+      element.className = `${isNested ? 'nested-folder' : 'folder-section'} folder-node`;
+      return element;
+    }
+
+    function createPinButton(folderPath, element) {
+      const pinBtn = document.createElement('img');
+      pinBtn.src = 'https://img.icons8.com/?size=100&id=XghFnrM2lzSW&format=png&color=000000';
+      Object.assign(pinBtn.style, {
+        position: 'absolute',
+        top: '0',
+        right: '0',
+        width: '30px',
+        height: '30px',
+        cursor: 'pointer',
+        opacity: pinnedFolders.includes(folderPath) ? '1' : '0.3',
+        filter: 'invert(var(--reverse))',
+        transition: 'opacity 0.2s ease'
+      });
+      pinBtn.onclick = (e) => {
+        e.stopPropagation();
+        const index = pinnedFolders.indexOf(folderPath);
+        if (index > -1) {
+          pinnedFolders.splice(index, 1);
+        } else {
+          pinnedFolders.push(folderPath);
+        }
+        localStorage.setItem('pinnedFolders', JSON.stringify(pinnedFolders));
+        pinBtn.style.opacity = pinnedFolders.includes(folderPath) ? '1' : '0.3';
+        reorderFolders(element.parentElement);
+      };
+      return pinBtn;
+    }
+
+    function reorderFolders(container) {
+      const children = Array.from(container.children);
+      const originalOrder = children.map(el => el.dataset.folderPath);
+      const newOrder = [...children].sort((a, b) => {
+        const aPinned = pinnedFolders.includes(a.dataset.folderPath);
+        const bPinned = pinnedFolders.includes(b.dataset.folderPath);
+        return bPinned - aPinned;
+      }).map(el => el.dataset.folderPath);
+
+      // Only reorder if positions actually change
+      if (JSON.stringify(originalOrder) === JSON.stringify(newOrder)) return;
+
+      // Disable transitions during reordering
+      container.style.transition = 'none';
+      children.sort((a, b) => {
+        const aPinned = pinnedFolders.includes(a.dataset.folderPath);
+        const bPinned = pinnedFolders.includes(b.dataset.folderPath);
+        return bPinned - aPinned;
+      }).forEach(child => container.appendChild(child));
+
+      // Force reflow and restore transitions
+      void container.offsetHeight;
+      container.style.transition = '';
+    }
+
+    // -------------------------------
+    // Filtered File Handling
+    // -------------------------------
+    const validExtensions = new Set([
+      'pdf', 'jpg', 'jpeg', 'png', 'gif',
+      'py', 'c', 'cpp', 'js', 'java', 'cs',
+      'ts', 'go', 'rb', 'php', 'swift', 'rs',
+      'html', 'css'
+    ]);
+
+    function createFileItem(fileName) {
+      const li = document.createElement('li');
+      li.className = 'file-item';
+
+      const isPdfFile = fileName.toLowerCase().endsWith('.pdf');
+      const fileIsCode = isCodeFile(fileName); // Use your existing isCodeFile function
+
+      let innerHtmlContent = ``;
+
+      if (isPdfFile) {
+        innerHtmlContent += `<img src="https://img.icons8.com/?size=25&id=59859&format=png&color=000000" alt="PDF icon" class="file-icon">`;
+      } else if (fileIsCode) { // Add this condition for code files
+        innerHtmlContent += `<img src="https://img.icons8.com/?size=20&id=OTlhcalmkiBX&format=png&color=000000" alt="Code icon" class="file-icon code-file-icon">`;
+      }
+
+      innerHtmlContent += `
           <span class="file-title">${fileName}</span>
           <button class="view-button">View</button>
           <button class="download-button">${fileIsCode ? 'Copy' : 'Download'}</button>
         `;
 
-        li.innerHTML = innerHtmlContent;
-        return li;
+      li.innerHTML = innerHtmlContent;
+      return li;
+    }
+
+    function isCodeFile(filename) {
+      const ext = filename.split('.').pop().toLowerCase();
+      return ['py', 'c', 'cpp', 'js', 'java', 'cs', 'ts', 'go', 'rb', 'php', 'swift', 'rs', 'html', 'css'].includes(ext);
+    }
+
+    // -------------------------------
+    // Global File View and Download Handlers
+    // -------------------------------
+    function handleFileView(rawUrl, fileType) {
+      try {
+        let recentFiles = JSON.parse(localStorage.getItem('recentFiles')) || [];
+        const newFile = { rawUrl, fileType, viewedAt: new Date().toISOString() };
+
+        // Remove old entry if it exists to bring it to the front
+        recentFiles = recentFiles.filter(file => file.rawUrl !== rawUrl);
+        recentFiles.unshift(newFile); // Add to the beginning
+        recentFiles = recentFiles.slice(0, 20); // Keep only the 20 most recent files
+        localStorage.setItem('recentFiles', JSON.stringify(recentFiles));
+      } catch (e) {
+        console.error("Error saving to local storage:", e);
       }
 
-      function isCodeFile(filename) {
-        const ext = filename.split('.').pop().toLowerCase();
-        return ['py', 'c', 'cpp', 'js', 'java', 'cs', 'ts', 'go', 'rb', 'php', 'swift', 'rs', 'html', 'css'].includes(ext);
+      if (fileType === 'pdf') {
+        pdfViewer.src = `https://docs.google.com/gview?url=${encodeURIComponent(rawUrl)}&embedded=true`;
+        pdfModal.style.display = "flex";
+        displayRecentFiles()
+        document.body.classList.add('modal-open');
+      } else if (fileType === 'code') {
+        fetch(rawUrl)
+          .then(response => response.text())
+          .then(code => {
+            codeViewer.textContent = code;
+            codeModal.style.display = "block";
+          });
+      } else if (fileType === 'image') {
+        imageViewer.src = rawUrl;
+        imageModal.style.display = "block";
       }
+    }
 
-      // -------------------------------
-      // Global File View and Download Handlers
-      // -------------------------------
-      function handleFileView(rawUrl, fileType) {
-        try {
-          let recentFiles = JSON.parse(localStorage.getItem('recentFiles')) || [];
-          const newFile = { rawUrl, fileType, viewedAt: new Date().toISOString() };
-
-          // Remove old entry if it exists to bring it to the front
-          recentFiles = recentFiles.filter(file => file.rawUrl !== rawUrl);
-          recentFiles.unshift(newFile); // Add to the beginning
-          recentFiles = recentFiles.slice(0, 20); // Keep only the 20 most recent files
-          localStorage.setItem('recentFiles', JSON.stringify(recentFiles));
-        } catch (e) {
-          console.error("Error saving to local storage:", e);
-        }
-
-        if (fileType === 'pdf') {
-          pdfViewer.src = `https://docs.google.com/gview?url=${encodeURIComponent(rawUrl)}&embedded=true`;
-          pdfModal.style.display = "flex";
-          displayRecentFiles()
-          document.body.classList.add('modal-open');
-        } else if (fileType === 'code') {
-          fetch(rawUrl)
-            .then(response => response.text())
-            .then(code => {
-              codeViewer.textContent = code;
-              codeModal.style.display = "block";
-            });
-        } else if (fileType === 'image') {
-          imageViewer.src = rawUrl;
-          imageModal.style.display = "block";
-        }
+    function handleFileDownload(rawUrl, fileType) {
+      if (fileType === 'code') {
+        // Copy the code file URL to clipboard
+        copyToClipboardWithNotification(rawUrl, { target: { getBoundingClientRect: () => ({ left: '50%', top: '90%' }) } });
+      } else {
+        window.open(rawUrl);
       }
+    }
 
-      function handleFileDownload(rawUrl, fileType) {
-        if (fileType === 'code') {
-          // Copy the code file URL to clipboard
-          copyToClipboardWithNotification(rawUrl, { target: { getBoundingClientRect: () => ({ left: '50%', top: '90%' }) } });
-        } else {
-          window.open(rawUrl);
-        }
-      }
+    // Make functions globally accessible
+    window.handleFileView = handleFileView;
+    window.handleFileDownload = handleFileDownload;
 
-      // Make functions globally accessible
-      window.handleFileView = handleFileView;
-      window.handleFileDownload = handleFileDownload;
+    // -------------------------------
+    // Main Fetch Functions
+    // -------------------------------
 
-      // -------------------------------
-      // Main Fetch Functions
-      // -------------------------------
-
-      // New function to fetch the entire repository tree at once
-       function fetchRepositoryTree() {
-        repoConfigs.forEach(async ({ owner, name }) => {
-          console.log("Owner:", owner);
-          console.log("Repo Name:", name);
-          const repoOwner=owner
-          const repoName=name
-          const folderContainer = document.getElementById('folderContainer');
+    // New function to fetch the entire repository tree at once
+    function fetchRepositoryTree() {
+      repoConfigs.forEach(async ({ owner, name }) => {
+        console.log("Owner:", owner);
+        console.log("Repo Name:", name);
+        const repoOwner = owner
+        const repoName = name
+        const folderContainer = document.getElementById('folderContainer');
         folderContainer.innerHTML = '';
 
         try {
@@ -568,9 +568,48 @@ document.addEventListener('DOMContentLoaded', () => {
           // 3. Sort by path to ensure parents are created before children
           treeData.tree.sort((a, b) => a.path.localeCompare(b.path));
 
+          // Create repository folder first
+          const repoFolderElement = createFolderElement(false);
+          repoFolderElement.dataset.folderPath = repoName;
+          repoFolderElement.dataset.repoOwner = repoOwner;
+          repoFolderElement.dataset.repoName = repoName;
+
+          const repoHeadingContainer = document.createElement('div');
+          repoHeadingContainer.style.position = 'relative';
+          const repoHeading = document.createElement('h3');
+          const repoFolderNameWrapper = document.createElement('div');
+          repoFolderNameWrapper.className = 'folderName';
+
+          const repoFolderImage = document.createElement('img');
+          repoFolderImage.src = 'https://img.icons8.com/?size=100&id=2939&format=png&color=000000';
+          repoFolderImage.alt = 'Folder Icon';
+          repoFolderImage.style.width = '35px';
+          repoFolderImage.style.height = '35px';
+          repoFolderImage.style.marginRight = '10px';
+          repoFolderImage.style.verticalAlign = 'middle';
+          repoFolderNameWrapper.appendChild(repoFolderImage);
+
+          repoFolderNameWrapper.appendChild(document.createTextNode(repoName));
+          repoHeading.appendChild(repoFolderNameWrapper);
+          repoFolderElement.onclick = (e) => handleFolderClick(e, repoFolderElement);
+
+          repoHeadingContainer.appendChild(repoHeading);
+          repoHeadingContainer.appendChild(createPinButton(repoName, repoFolderElement));
+
+          const repoContentContainer = document.createElement('div');
+          repoContentContainer.className = 'folder-content';
+          const repoFileList = document.createElement('ul');
+          repoFileList.className = 'file-list';
+          const repoNestedFoldersContainer = document.createElement('div');
+          repoNestedFoldersContainer.className = 'nested-folders';
+          repoContentContainer.append(repoFileList, repoNestedFoldersContainer);
+
+          repoFolderElement.append(repoHeadingContainer, repoContentContainer);
+          folderContainer.appendChild(repoFolderElement);
+
           // This map will store the reference to each folder's content container div
           const folderElementMap = {
-            '': folderContainer
+            '': repoContentContainer
           };
 
           for (const item of treeData.tree) {
@@ -670,7 +709,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
           document.dispatchEvent(new Event('folderContentLoaded'));
           reorderFolders(folderContainer);
-          
+
           // Apply folder size display to all folders
           setTimeout(() => {
             const allFolders = document.querySelectorAll('.folder-node');
@@ -682,266 +721,266 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
           console.error("Error fetching repository tree:", error);
         }
-        })      
-        
-      }
+      })
+
+    }
 
 
-      // This function now just processes a file with video links
-      async function renderVideoCardsFromFile(fileUrl, parentElement) {
-        const getYouTubeThumbnail = (url) => {
-          let videoId = null;
-          try {
-            const urlObj = new URL(url);
-            if (urlObj.hostname.includes('youtube.com') || urlObj.hostname.includes('youtu.be')) {
-              videoId = urlObj.searchParams.get('v') || urlObj.pathname.split('/').pop();
-            } else if (urlObj.hostname.includes('googleusercontent.com')) {
-              // Add robust extraction for googleusercontent URLs if needed
-              videoId = urlObj.searchParams.get('v');
-            }
-          } catch (e) {
-            console.error("Error parsing URL for thumbnail:", url, e);
-          }
-          return videoId ? `https://i.ytimg.com/vi/${videoId}/sddefault.jpg` : 'https://placehold.co/480x270/2a2a2a/ffffff?text=Video+Not+Found';
-        };
-
+    // This function now just processes a file with video links
+    async function renderVideoCardsFromFile(fileUrl, parentElement) {
+      const getYouTubeThumbnail = (url) => {
+        let videoId = null;
         try {
-          const response = await fetch(fileUrl);
-          if (!response.ok) return;
+          const urlObj = new URL(url);
+          if (urlObj.hostname.includes('youtube.com') || urlObj.hostname.includes('youtu.be')) {
+            videoId = urlObj.searchParams.get('v') || urlObj.pathname.split('/').pop();
+          } else if (urlObj.hostname.includes('googleusercontent.com')) {
+            // Add robust extraction for googleusercontent URLs if needed
+            videoId = urlObj.searchParams.get('v');
+          }
+        } catch (e) {
+          console.error("Error parsing URL for thumbnail:", url, e);
+        }
+        return videoId ? `https://i.ytimg.com/vi/${videoId}/sddefault.jpg` : 'https://placehold.co/480x270/2a2a2a/ffffff?text=Video+Not+Found';
+      };
 
-          const csvData = await response.text();
-          const rows = csvData.trim().split('\n').filter(row => row);
-          if (rows.length === 0) return;
+      try {
+        const response = await fetch(fileUrl);
+        if (!response.ok) return;
 
-          const cardBox = document.createElement('div');
-          cardBox.className = 'cardBox';
+        const csvData = await response.text();
+        const rows = csvData.trim().split('\n').filter(row => row);
+        if (rows.length === 0) return;
 
-          rows.forEach(row => {
-            const [videoUrl, title, description] = row.split(',').map(item => item.trim());
-            if (!videoUrl || !title || !description) return;
+        const cardBox = document.createElement('div');
+        cardBox.className = 'cardBox';
 
-            const card = document.createElement('div');
-            card.className = 'card';
-            card.innerHTML = `
+        rows.forEach(row => {
+          const [videoUrl, title, description] = row.split(',').map(item => item.trim());
+          if (!videoUrl || !title || !description) return;
+
+          const card = document.createElement('div');
+          card.className = 'card';
+          card.innerHTML = `
             <a href="${videoUrl}" target="_blank" rel="noopener noreferrer">
               <img src="${getYouTubeThumbnail(videoUrl)}" alt="${title}" onerror="this.onerror=null;this.src='https://placehold.co/480x270/ff0000/ffffff?text=Image+Failed';">
             </a>
             <h5 class="card-heading">${title}</h5>
             <p class="card-title">${description}</p>
           `;
-            cardBox.appendChild(card);
-          });
-          // Prepend to the main content area of the folder, not the file list
-          parentElement.prepend(cardBox);
-        } catch (error) {
-          console.error("Error processing video links file:", error);
-        }
+          cardBox.appendChild(card);
+        });
+        // Prepend to the main content area of the folder, not the file list
+        parentElement.prepend(cardBox);
+      } catch (error) {
+        console.error("Error processing video links file:", error);
+      }
+    }
+
+
+
+    const showPinOnlyButton = document.querySelector('.showPinOnly');
+    let showOnlyPinned = false;
+
+    function updateFileDisplay() {
+      const folderContainer = document.getElementById('folderContainer');
+      const searchInput = document.getElementById('searchInput');
+      const searchResults = document.getElementById('searchResults');
+      if (searchResults.style.display === 'block' && searchInput.value.trim() !== '') {
+        return;
       }
 
+      folderContainer.style.display = 'flex';
+      searchResults.style.display = 'none';
+
+      const allFolderSections = document.querySelectorAll('.folder-section.folder-node');
+
+      allFolderSections.forEach(folderSection => {
+        const folderPath = folderSection.dataset.folderPath;
+
+        let shouldDisplayFolder = false;
+
+        if (showOnlyPinned) {
+          if (pinnedFolders.includes(folderPath)) {
+            shouldDisplayFolder = true;
+          }
+        } else {
+          shouldDisplayFolder = true;
+        }
+
+        if (shouldDisplayFolder) {
+          folderSection.style.display = 'block';
+          const filesInFolder = folderSection.querySelectorAll('.file-element');
+          filesInFolder.forEach(file => {
+            file.style.display = '';
+          });
+        } else {
+          folderSection.style.display = 'none';
+        }
+      });
+
+      const rootFiles = Array.from(document.querySelectorAll('.file-element')).filter(file =>
+        !file.closest('.folder-section')
+      );
+
+      rootFiles.forEach(file => {
+        const fileId = file.dataset.fileId;
+        const isPinned = pinnedFolders.includes(fileId);
+
+        if (showOnlyPinned) {
+          if (isPinned) {
+            file.style.display = '';
+          } else {
+            file.style.display = 'none';
+          }
+        } else {
+          file.style.display = '';
+        }
+      });
+    }
 
 
-      const showPinOnlyButton = document.querySelector('.showPinOnly');
-      let showOnlyPinned = false;
+    if (showPinOnlyButton) {
+      showPinOnlyButton.addEventListener('click', () => {
+        showOnlyPinned = !showOnlyPinned;
 
-      function updateFileDisplay() {
-        const folderContainer = document.getElementById('folderContainer');
-        const searchInput = document.getElementById('searchInput');
-        const searchResults = document.getElementById('searchResults');
-        if (searchResults.style.display === 'block' && searchInput.value.trim() !== '') {
+        if (showOnlyPinned) {
+          showPinOnlyButton.classList.add('active');
+        } else {
+          showPinOnlyButton.classList.remove('active');
+        }
+
+        updateFileDisplay();
+      });
+    }
+    // -------------------------------
+    // Theme Toggle
+    // -------------------------------
+    const themeToggle = document.getElementById('themeToggle');
+    const rootElement = document.documentElement;
+    const savedTheme = localStorage.getItem('theme') || 'light';
+
+    rootElement.setAttribute('data-theme', savedTheme);
+    themeToggle.innerHTML = savedTheme === 'dark'
+      ? '<img src="https://img.icons8.com/?size=100&id=54382&format=png&color=000000" style="width:25px;height:25px; filter: invert(1);">'
+      : '<img src="https://img.icons8.com/?size=100&id=9313&format=png&color=000000" style="width:25px;height:25px;">';
+
+    themeToggle.onclick = () => {
+      const newTheme = rootElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+      rootElement.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+      themeToggle.innerHTML = newTheme === 'dark'
+        ? '<img src="https://img.icons8.com/?size=100&id=54382&format=png&color=000000" style="width:25px;height:25px; filter: invert(1);">'
+        : '<img src="https://img.icons8.com/?size=100&id=9313&format=png&color=000000" style="width:25px;height:25px;">';
+    };
+
+    // -------------------------------
+    // Search Initialization
+    // -------------------------------
+    function initializeSearch() {
+      const searchButton = document.getElementById('searchButton');
+      const searchInput = document.getElementById('searchInput');
+      const mainElement = document.querySelector('main');
+      const folderContainer = document.getElementById('folderContainer');
+
+      // Create search results container
+      const searchResults = document.createElement('div');
+      searchResults.id = 'searchResults';
+      searchResults.style.display = 'none';
+      mainElement.appendChild(searchResults);
+
+      // Store original file items reference
+      let allFileElements = [];
+
+      // Update file collection whenever content loads
+      function updateFileElements() {
+        allFileElements = Array.from(document.querySelectorAll('.file-item'));
+        console.log('Files available for search:', allFileElements.length);
+      }
+
+      // Initial collection after load
+      document.addEventListener('DOMContentLoaded', updateFileElements);
+
+      // Update when new content loads
+      document.addEventListener('folderContentLoaded', updateFileElements);
+
+      function performSearch() {
+        const searchTerm = searchInput.value.trim().toLowerCase();
+
+        if (!searchTerm) {
+          // If search term is empty, show original structure and hide results
+          folderContainer.style.display = 'flex';
+          searchResults.style.display = 'none';
+
+          // Ensure all original files and their folder sections are visible
+          allFileElements.forEach(file => {
+            file.style.display = ''; // Reset display for the file itself
+            const folderSection = file.closest('.folder-section');
+            if (folderSection) { // Check if .folder-section ancestor exists
+              folderSection.style.display = 'block'; // Ensure its parent folder is visible
+            }
+          });
           return;
         }
 
-        folderContainer.style.display = 'flex';
-        searchResults.style.display = 'none';
+        // Hide original structure when search term is present
+        folderContainer.style.display = 'none';
 
-        const allFolderSections = document.querySelectorAll('.folder-section.folder-node');
+        // Show search results container and clear previous results
+        searchResults.style.display = 'block';
+        searchResults.innerHTML = '<h2>Search Results :</h2>';
 
-        allFolderSections.forEach(folderSection => {
-          const folderPath = folderSection.dataset.folderPath;
-
-          let shouldDisplayFolder = false;
-
-          if (showOnlyPinned) {
-            if (pinnedFolders.includes(folderPath)) {
-              shouldDisplayFolder = true;
-            }
-          } else {
-            shouldDisplayFolder = true;
+        // Find matches
+        const matches = allFileElements.filter(file => {
+          const fileTitleElement = file.querySelector('.file-title');
+          if (fileTitleElement) { // Check if .file-title element exists
+            const fileName = fileTitleElement.textContent.toLowerCase();
+            return fileName.includes(searchTerm);
           }
-
-          if (shouldDisplayFolder) {
-            folderSection.style.display = 'block';
-            const filesInFolder = folderSection.querySelectorAll('.file-element');
-            filesInFolder.forEach(file => {
-              file.style.display = '';
-            });
-          } else {
-            folderSection.style.display = 'none';
-          }
+          return false; // If .file-title is not found, it's not a match
         });
 
-        const rootFiles = Array.from(document.querySelectorAll('.file-element')).filter(file =>
-          !file.closest('.folder-section')
-        );
+        console.log('Found matches:', matches.length);
 
-        rootFiles.forEach(file => {
-          const fileId = file.dataset.fileId;
-          const isPinned = pinnedFolders.includes(fileId);
+        if (matches.length === 0) {
+          searchResults.innerHTML = '<h2>No matching files were found.</h2>';
+        } else {
+          // Display matches
+          matches.forEach(originalFile => {
+            const clone = originalFile.cloneNode(true); // Clone the file element
 
-          if (showOnlyPinned) {
-            if (isPinned) {
-              file.style.display = '';
-            } else {
-              file.style.display = 'none';
+            // Reattach event handlers for the cloned elements
+            // Assuming handleFileView and handleFileDownload are globally accessible functions
+            const newViewBtn = clone.querySelector('.view-button');
+            const newDownloadBtn = clone.querySelector('.download-button');
+
+            // Get original data attributes from the original element
+            const rawUrl = originalFile.dataset.rawUrl;
+            const fileType = originalFile.dataset.fileType;
+
+            if (newViewBtn) {
+              newViewBtn.onclick = () => handleFileView(rawUrl, fileType);
             }
-          } else {
-            file.style.display = '';
-          }
-        });
-      }
-
-
-      if (showPinOnlyButton) {
-        showPinOnlyButton.addEventListener('click', () => {
-          showOnlyPinned = !showOnlyPinned;
-
-          if (showOnlyPinned) {
-            showPinOnlyButton.classList.add('active');
-          } else {
-            showPinOnlyButton.classList.remove('active');
-          }
-
-          updateFileDisplay();
-        });
-      }
-      // -------------------------------
-      // Theme Toggle
-      // -------------------------------
-      const themeToggle = document.getElementById('themeToggle');
-      const rootElement = document.documentElement;
-      const savedTheme = localStorage.getItem('theme') || 'light';
-
-      rootElement.setAttribute('data-theme', savedTheme);
-      themeToggle.innerHTML = savedTheme === 'dark'
-        ? '<img src="https://img.icons8.com/?size=100&id=54382&format=png&color=000000" style="width:25px;height:25px; filter: invert(1);">'
-        : '<img src="https://img.icons8.com/?size=100&id=9313&format=png&color=000000" style="width:25px;height:25px;">';
-
-      themeToggle.onclick = () => {
-        const newTheme = rootElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
-        rootElement.setAttribute('data-theme', newTheme);
-        localStorage.setItem('theme', newTheme);
-        themeToggle.innerHTML = newTheme === 'dark'
-          ? '<img src="https://img.icons8.com/?size=100&id=54382&format=png&color=000000" style="width:25px;height:25px; filter: invert(1);">'
-          : '<img src="https://img.icons8.com/?size=100&id=9313&format=png&color=000000" style="width:25px;height:25px;">';
-      };
-
-      // -------------------------------
-      // Search Initialization
-      // -------------------------------
-      function initializeSearch() {
-        const searchButton = document.getElementById('searchButton');
-        const searchInput = document.getElementById('searchInput');
-        const mainElement = document.querySelector('main');
-        const folderContainer = document.getElementById('folderContainer');
-
-        // Create search results container
-        const searchResults = document.createElement('div');
-        searchResults.id = 'searchResults';
-        searchResults.style.display = 'none';
-        mainElement.appendChild(searchResults);
-
-        // Store original file items reference
-        let allFileElements = [];
-
-        // Update file collection whenever content loads
-        function updateFileElements() {
-          allFileElements = Array.from(document.querySelectorAll('.file-item'));
-          console.log('Files available for search:', allFileElements.length);
-        }
-
-        // Initial collection after load
-        document.addEventListener('DOMContentLoaded', updateFileElements);
-
-        // Update when new content loads
-        document.addEventListener('folderContentLoaded', updateFileElements);
-
-        function performSearch() {
-          const searchTerm = searchInput.value.trim().toLowerCase();
-
-          if (!searchTerm) {
-            // If search term is empty, show original structure and hide results
-            folderContainer.style.display = 'flex';
-            searchResults.style.display = 'none';
-
-            // Ensure all original files and their folder sections are visible
-            allFileElements.forEach(file => {
-              file.style.display = ''; // Reset display for the file itself
-              const folderSection = file.closest('.folder-section');
-              if (folderSection) { // Check if .folder-section ancestor exists
-                folderSection.style.display = 'block'; // Ensure its parent folder is visible
-              }
-            });
-            return;
-          }
-
-          // Hide original structure when search term is present
-          folderContainer.style.display = 'none';
-
-          // Show search results container and clear previous results
-          searchResults.style.display = 'block';
-          searchResults.innerHTML = '<h2>Search Results :</h2>';
-
-          // Find matches
-          const matches = allFileElements.filter(file => {
-            const fileTitleElement = file.querySelector('.file-title');
-            if (fileTitleElement) { // Check if .file-title element exists
-              const fileName = fileTitleElement.textContent.toLowerCase();
-              return fileName.includes(searchTerm);
+            if (newDownloadBtn) {
+              newDownloadBtn.onclick = () => handleFileDownload(rawUrl, fileType);
             }
-            return false; // If .file-title is not found, it's not a match
+
+            searchResults.appendChild(clone);
           });
-
-          console.log('Found matches:', matches.length);
-
-          if (matches.length === 0) {
-            searchResults.innerHTML = '<h2>No matching files were found.</h2>';
-          } else {
-            // Display matches
-            matches.forEach(originalFile => {
-              const clone = originalFile.cloneNode(true); // Clone the file element
-
-              // Reattach event handlers for the cloned elements
-              // Assuming handleFileView and handleFileDownload are globally accessible functions
-              const newViewBtn = clone.querySelector('.view-button');
-              const newDownloadBtn = clone.querySelector('.download-button');
-
-              // Get original data attributes from the original element
-              const rawUrl = originalFile.dataset.rawUrl;
-              const fileType = originalFile.dataset.fileType;
-
-              if (newViewBtn) {
-                newViewBtn.onclick = () => handleFileView(rawUrl, fileType);
-              }
-              if (newDownloadBtn) {
-                newDownloadBtn.onclick = () => handleFileDownload(rawUrl, fileType);
-              }
-
-              searchResults.appendChild(clone);
-            });
-          }
         }
-
-        searchButton.addEventListener('click', performSearch);
-        searchInput.addEventListener('input', performSearch);
       }
 
-      // Make fetchRepositoryTree globally accessible
-      window.fetchRepositoryTree = fetchRepositoryTree;
-      
-      // Initialize
-      fetchRepositoryTree();
-      initializeSearch();
-    })
+      searchButton.addEventListener('click', performSearch);
+      searchInput.addEventListener('input', performSearch);
+    }
+
+    // Make fetchRepositoryTree globally accessible
+    window.fetchRepositoryTree = fetchRepositoryTree;
+
+    // Initialize
+    fetchRepositoryTree();
+    initializeSearch();
+  })
     .catch(error => {
       console.error('Error loading configuration:', error);
     });

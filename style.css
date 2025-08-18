@@ -299,6 +299,7 @@ main {
 }
 
 .folder-section {
+  margin: 15px 0px;
   background: var(--folder-bg);
   color: var(--folder-text);
   padding: 15px;
@@ -437,7 +438,7 @@ main {
 }
 
 .folder-node.active .folder-content {
-  max-height: 5000px;
+  max-height: 100000px;
   opacity: 1;
   transform: scaleY(1);
 }
