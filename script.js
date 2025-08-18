@@ -370,17 +370,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const wasActive = folderElement.classList.contains('active');
       const parentContainer = folderElement.parentElement;
+      const isFirstLevelInRepo = parentContainer && parentContainer.classList.contains('folder-content');
 
       folderElement.classList.remove('collapsing', 'expanding');
 
       if (!wasActive) {
-        Array.from(parentContainer.children).forEach(child => {
-          if (child !== folderElement && child.classList.contains('folder-node')) {
-            if (child.classList.contains('active')) {
-              child.classList.remove('active');
+        // Only apply accordion behavior to root-level repository folders
+        // First-level folders inside repo can be opened independently
+        if (!isFirstLevelInRepo) {
+          Array.from(parentContainer.children).forEach(child => {
+            if (child !== folderElement && child.classList.contains('folder-node')) {
+              if (child.classList.contains('active')) {
+                child.classList.remove('active');
+              }
             }
-          }
-        });
+          });
+        }
 
         folderElement.classList.remove('active');
         void folderElement.offsetWidth;
@@ -628,12 +633,20 @@ document.addEventListener('DOMContentLoaded', () => {
             // A. Handle directory creation ('tree')
             if (item.type === 'tree') {
               const isNested = parentPath !== '';
+              const isFirstLevelInRepo = parentPath === ''; // Direct child of repository folder
               const parentDomNode = isNested ? parentContentContainer.querySelector('.nested-folders') : parentContentContainer;
 
               const folderElement = createFolderElement(isNested);
               folderElement.dataset.folderPath = item.path;
               folderElement.dataset.repoOwner = repoOwner;
               folderElement.dataset.repoName = repoName;
+
+              // First-level folders in repo start closed (no active class)
+              // Deeper nested folders don't get click functionality
+              if (isFirstLevelInRepo) {
+                // Explicitly ensure it starts closed
+                folderElement.classList.remove('active');
+              }
 
               const headingContainer = document.createElement('div');
               headingContainer.style.position = 'relative';
@@ -654,7 +667,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
               folderNameWrapper.appendChild(document.createTextNode(itemName));
               heading.appendChild(folderNameWrapper);
-              folderElement.onclick = (e) => handleFolderClick(e, folderElement);
+              
+              // Only add click handler to first-level folders in repo
+              if (isFirstLevelInRepo) {
+                folderElement.onclick = (e) => handleFolderClick(e, folderElement);
+                // Add cursor pointer to indicate clickability
+                folderElement.style.cursor = 'pointer';
+              }
 
               headingContainer.appendChild(heading);
               headingContainer.appendChild(createPinButton(item.path, folderElement));

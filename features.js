@@ -232,7 +232,7 @@ function enhanceCSSTransitions() {
   style.textContent = `
     /* Enhanced Fast Transitions */
     .folder-node {
-      transition: all 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
+      transition: all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94) !important;
     }
     
     .folder-content {
@@ -668,14 +668,14 @@ function initializeUsageDashboard() {
                   color: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); 
                   font-size: 14px; outline: none; width: 100%; box-sizing: border-box;
                   transition: all 0.1s ease;
-                ">
+                " onkeydown="if(event.key === 'Enter') { event.preventDefault(); document.getElementById('newRepoName').focus(); }">
                 <input type="text" id="newRepoName" placeholder="Repository name" style="
                   padding: 12px; border: 1px solid rgba(255, 255, 255, 0.08); 
                   border-radius: 8px; background: rgba(255, 255, 255, 0.03); 
                   color: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); 
                   font-size: 14px; outline: none; width: 100%; box-sizing: border-box;
                   transition: all 0.1s ease;
-                ">
+                " onkeydown="if(event.key === 'Enter') { event.preventDefault(); document.getElementById('addRepoBtn').click(); }">
               </div>
             </div>
             
@@ -830,8 +830,7 @@ function initializeUsageDashboard() {
               flex-shrink: 0;
             ">
               <button class="edit-repo-btn" data-index="${index}" style="
-                width: 32px; height: 32px;
-                background: transparent; 
+                width: 32px; height: 32px; 
                 border: none; 
                 border-radius: 6px; cursor: pointer; 
                 transition: all 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -845,8 +844,7 @@ function initializeUsageDashboard() {
               " title="Edit Repository"></button>
               <button class="delete-repo-btn" data-index="${index}" style="
                 width: 32px; height: 32px;
-                background: transparent; 
-                border: none; 
+                border: solid 1px var(--boder-color); 
                 border-radius: 6px; cursor: pointer; 
                 transition: all 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94);
                 display: flex; align-items: center; justify-content: center;
@@ -1284,10 +1282,10 @@ function initializeUsageDashboard() {
     function refreshFoldersWithTransition() {
       // Store a flag in sessionStorage to show blackout on reload
       sessionStorage.setItem('showReloadBlackout', 'true');
-      
+
       // Store current theme to ensure consistency
-      const currentTheme = document.documentElement.getAttribute('data-theme') || 
-                          (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      const currentTheme = document.documentElement.getAttribute('data-theme') ||
+        (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
       sessionStorage.setItem('reloadTheme', currentTheme);
 
       // Create a persistent blackout overlay
@@ -1295,7 +1293,7 @@ function initializeUsageDashboard() {
       blackoutOverlay.id = 'reloadBlackout';
       // Detect theme more reliably
       let isDarkTheme = false;
-      
+
       // Check data-theme attribute first
       const themeAttr = document.documentElement.getAttribute('data-theme');
       if (themeAttr === 'dark') {
@@ -1306,9 +1304,9 @@ function initializeUsageDashboard() {
         // Fallback to system preference
         isDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
       }
-      
+
       const backgroundColor = isDarkTheme ? '#000' : '#fff';
-      
+
       blackoutOverlay.style.cssText = `
         position: fixed;
         top: 0;
@@ -1437,11 +1435,11 @@ document.addEventListener('DOMContentLoaded', () => {
       } else {
         isDarkTheme = window.matchMedia('(prefers-color-scheme: dark)').matches;
       }
-      
+
       // Restore document and body styles with proper theme background
       document.documentElement.removeAttribute('style');
       document.body.removeAttribute('style');
-      
+
       // Ensure background matches theme during restoration
       const properBackground = isDarkTheme ? '#000' : '#fff';
       document.body.style.background = '';
